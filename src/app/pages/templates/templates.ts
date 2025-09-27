@@ -1,42 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { RouterLink } from '@angular/router';
-// import { TemplatesService,Template } from '../../services/templates';
-
-// @Component({
-//   selector: 'app-templates',
-//   standalone: true,
-//   imports: [CommonModule, RouterLink],
-//   templateUrl: './templates.html',
-//   styleUrls: ['./templates.scss']
-// })
-// export class Templates implements OnInit {
-//   templates: (Template & { status: string })[] = [];
-
-//  constructor(private templatesService: TemplatesService) {}
-
-
-//   ngOnInit(): void {
-//     this.loadTemplates();
-//   }
-
-//   loadTemplates() {
-//     this.templatesService.getTemplates().subscribe({
-//       next: (res:any) => {
-//   this.templates = res.data.map((t: Template) => ({
-//   ...t,
-//   status: t.active ? 'Active' : 'In-Active'
-// }));
-
-//       },
-//       error: (err:any) => {
-//         console.error('Error fetching templates', err);
-//       }
-//     });
-//   }
-// }
-
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -80,7 +41,4 @@ onSearch() {
     t.name.toLowerCase().includes(term) ||
     t.code.toLowerCase().includes(term)
   );
-}
-
-
-}
+}}

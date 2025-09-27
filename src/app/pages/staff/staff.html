@@ -1,4 +1,53 @@
-<div class="header">
+<div class="header-bar">
   <h3>Staff</h3>
-  <button class="btn btn-primary" (click)="onAddUserClick()">Add User</button>
+  <button class="add-btn" *ngIf="!showForm" (click)="onAdd()">Add User</button>
+</div>
+<!-- get data display -->
+<div *ngIf="!showForm" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Email Address</th>
+        <th>Username</th>
+        <th>Status</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of staffList">
+        <td>{{ user.fullName }}</td>
+        <td>{{ user.email }}</td>
+        <td>@{{ user.userName }}</td>
+    <td>
+  <span [ngClass]="user.userDisabled ? 'inactive' : 'active'">
+    {{ user.userDisabled ? 'Inactive' : 'Active' }}
+  </span>
+</td>
+
+        <td>{{ user.createdAt | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- add users -->
+<div *ngIf="showForm" class="form-card">
+  <h4 class="form-title">Add User Info</h4>
+
+  <form (ngSubmit)="onSave()" #userForm="ngForm" class="form-body">
+    <input type="text" [(ngModel)]="formData.fullName" name="fullName" placeholder="Full Name" required />
+    <input type="email" [(ngModel)]="formData.email" name="email" placeholder="Email Address" required />
+    <input type="text" [(ngModel)]="formData.userName" name="userName" placeholder="Username" required />
+    <input type="password" [(ngModel)]="formData.password" name="password" placeholder="Password" required />
+
+    <label>
+      <input type="checkbox" [(ngModel)]="formData.userDisabled" name="userDisabled" />
+      Disabled
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="save-btn">Save</button>
+      <button type="button" class="cancel-btn" (click)="onCancel()">Cancel</button>
+    </div>
+  </form>
 </div>

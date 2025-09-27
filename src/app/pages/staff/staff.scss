@@ -1,47 +1,110 @@
-.staff-container {
-  background: #f9fafc;
-  padding: 20px;
-  border-radius: 12px;
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
 
-    h3 {
+  .add-btn {
+    background: #2c3e97;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+}
+
+.table-container {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8f9fc;
+      color: #666;
       font-weight: 600;
-      color: #444;
-    }
-
-    .btn {
-      border-radius: 8px;
     }
   }
+}
 
-  .search-filter {
+.form-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  .form-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e97;
+    margin-bottom: 15px;
+  }
+
+  .form-body {
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+  }
+
+  .form-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
     gap: 10px;
-    margin-bottom: 20px;
 
-    input {
-      flex: 1;
+    .save-btn {
+      background-color: #2c3e97;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .cancel-btn {
+      background-color: #f1f1f1;
+      color: #333;
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
     }
   }
+}
 
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 
-    table {
-      th {
-        color: #666;
-        font-weight: 600;
-      }
-      td {
-        color: #333;
-      }
-    }
-  }
+.active {
+  color: green;
+  font-weight: bold;
+}
+
+.inactive {
+  color: red;
+  font-weight: bold;
 }

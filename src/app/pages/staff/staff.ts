@@ -1,46 +1,85 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../services/user';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-staff',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './staff.html',
-  styleUrls: ['./staff.scss'],
+  styleUrls: ['./staff.scss']
 })
 export class Staff implements OnInit {
+  displayedColumns: string[] = ['fullName', 'email', 'userName', 'status', 'createdAt'];
   staffList: any[] = [];
-  newUser: any = { userName: '', email: '', fullName: '', groupNames: [], password: '' };
   showForm = false;
+  formData: any = {};
 
-  constructor(private userService: UserService) {}
+
+  private readonly DEFAULT_GROUP_ID = '68d43167983fa787f53f54ad';
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
-  loadUsers(): void {
-    this.userService.getUsers().subscribe((res) => {
-      this.staffList = res.data;
+  getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
+// get users
+  loadUsers() {
+    const headers = this.getAuthHeaders();
+    this.http.get<any>('http://localhost:3001/api/v1/users', { headers }).subscribe({
+      next: (res) => {
+        this.staffList = res.data || [];
+      },
+      error: (err) => {
+        console.error('Error fetching users:', err);
+      }
     });
   }
 
-  onAddUserClick(): void {
+  onAdd() {
     this.showForm = true;
+    this.formData = {};
   }
 
-  saveUser(): void {
-    this.userService.addUser(this.newUser).subscribe({
+//  new user
+  onSave() {
+    const headers = this.getAuthHeaders();
+
+    const body = {
+      fullName: this.formData.fullName,
+      email: this.formData.email,
+      userName: this.formData.userName,
+      groupIds: [this.DEFAULT_GROUP_ID], 
+      password: this.formData.password,
+      userDisabled: this.formData.userDisabled || false
+    };
+
+    console.log("Sending body:", body);
+
+    this.http.post<any>('http://localhost:3001/api/v1/users', body, { headers }).subscribe({
       next: (res) => {
-        this.staffList.push(res); 
-        this.newUser = { userName: '', email: '', fullName: '', groupNames: [], password: '' };
+        const newUser = res.data || res;
+        this.staffList.push(newUser);
         this.showForm = false;
+        this.formData = {};
       },
       error: (err) => {
         console.error('Error adding user:', err);
-      },
+        alert(err.error?.message || 'Error adding user');
+      }
     });
+  }
+
+  onCancel() {
+    this.showForm = false;
   }
 }
