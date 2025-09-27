@@ -1,0 +1,70 @@
+<div class="header-bar">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'product-grade'" (click)="setActiveTab('product-grade')">Product Grade</button>
+    <button [class.active]="activeTab === 'analysis-type'" (click)="setActiveTab('analysis-type')">Analysis Type</button>
+    <button [class.active]="activeTab === 'analysis-group'" (click)="setActiveTab('analysis-group')">Analysis Group</button>
+    <button [class.active]="activeTab === 'analysis'" (click)="setActiveTab('analysis')">Analysis</button>
+    <button [class.active]="activeTab === 'test'" (click)="setActiveTab('test')">Test</button>
+  </div>
+
+  <button class="add-role-btn" (click)="onAddRole()">+ Add Role</button>
+</div>
+<!-- tabel -->
+<div *ngIf="!showForm">
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let col of displayedColumns">{{ col | titlecase }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of tableData">
+        <td *ngFor="let col of displayedColumns">{{ row[col] }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- form -->
+<div *ngIf="showForm" class="form-container">
+  <h3>{{ activeTab | titlecase }} Info</h3>
+
+  <div *ngIf="activeTab === 'product-grade'">
+    <input placeholder="Code" [(ngModel)]="formData.code">
+    <input placeholder="Name" [(ngModel)]="formData.name">
+    <!-- <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea> -->
+  </div>
+
+  <div *ngIf="activeTab === 'analysis-type'">
+    <input placeholder="Code" [(ngModel)]="formData.code">
+    <input placeholder="Name" [(ngModel)]="formData.name">
+    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  </div>
+
+  <div *ngIf="activeTab === 'analysis-group'">
+    <input placeholder="Code" [(ngModel)]="formData.code">
+    <input placeholder="Name" [(ngModel)]="formData.name">
+    <input placeholder="Product Grade Name" [(ngModel)]="formData.productGradeName">
+    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  </div>
+
+  <div *ngIf="activeTab === 'analysis'">
+    <input placeholder="Code" [(ngModel)]="formData.code">
+    <input placeholder="Name" [(ngModel)]="formData.name">
+    <input placeholder="Analysis Group Name" [(ngModel)]="formData.analysisGroupName">
+    <input placeholder="Analysis Type Name" [(ngModel)]="formData.analysisTypeName">
+    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  </div>
+
+  <div *ngIf="activeTab === 'test'">
+    <input placeholder="Code" [(ngModel)]="formData.code">
+    <input placeholder="Name" [(ngModel)]="formData.name">
+    <input placeholder="Analysis Name" [(ngModel)]="formData.analysisName">
+    <input placeholder="Unit" [(ngModel)]="formData.unit">
+    <input placeholder="Target Value" [(ngModel)]="formData.targetValue">
+  </div>
+
+  <div class="form-actions">
+    <button (click)="onSave()">Save</button>
+    <button (click)="onCancel()">Cancel</button>
+  </div>
+</div>

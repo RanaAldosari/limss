@@ -24,12 +24,13 @@ export class Login {
 
   ngOnInit(): void {
     this.initForm();
+
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/home']);
     }
   }
 
-  initForm(): void {
+  private initForm(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -41,32 +42,34 @@ export class Login {
     this.cdr.detectChanges();
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.markFormGroupTouched(this.loginForm);
-      return;
-    }
-
-    this.isSubmitting = true;
-    this.errorMessage = '';
-    this.cdr.detectChanges();
-
-    this.authService.login(this.loginForm.value).subscribe({
-     next: () => {
-  this.router.navigate(['/home']);
-},
-
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
-        this.isSubmitting = false;
-        this.cdr.detectChanges();
-      },
-      complete: () => {
-        this.isSubmitting = false;
-        this.cdr.detectChanges();
-      }
-    });
+ onSubmit(): void {
+  if (this.loginForm.invalid) {
+    this.markFormGroupTouched(this.loginForm);
+    return;
   }
+
+  this.isSubmitting = true;
+  this.errorMessage = '';
+  this.cdr.detectChanges();
+
+  const data = this.loginForm.value; 
+
+  this.authService.login(data).subscribe({
+    next: (res) => {
+      // localStorage.setItem('token', res.token); 
+      localStorage.setItem('token', res.data.token);
+localStorage.setItem('user', JSON.stringify(res.data.user));
+      this.router.navigate(['/home']);  
+    },
+    error: (err) => {
+      console.error('Login error:', err);
+      this.errorMessage = 'Invalid email or password';
+      this.isSubmitting = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
+
 
   navigateToForgotPassword(): void {
     const email = this.loginForm.get('email')?.value;

@@ -1,0 +1,131 @@
+.templates-container {
+  padding: 1rem 1.5rem;
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+
+    .divider {
+      margin: 0 0.5rem;
+    }
+
+    .current {
+      color: #4f46e5;
+      font-weight: 500;
+    }
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .search-filter {
+      display: flex;
+      gap: 0.5rem;
+
+      input {
+        // padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        width: 200px;
+      }
+
+      .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.5rem 0.75rem;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+    }
+
+    .add-btn {
+      padding: 0.6rem 1rem;
+      background: #4f46e5;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+      &:hover {
+        background: #4338ca;
+      }
+    }
+  }
+
+  .table {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+    .table-header, .row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+      align-items: center;
+    }
+
+    .table-header {
+    //   font-weight: 600;
+      color: #374151;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .row {
+      border-bottom: 1px solid #f3f4f6;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .status-active {
+      color: #16a34a;
+      font-weight: 500;
+    }
+
+    .status-inactive {
+      color: #dc2626;
+      font-weight: 500;
+    }
+  }
+}
+
+
+.search-filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 250px;
+
+  img {
+    position: absolute;
+    left: 10px;      // الأيقونة يسار
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px 10px 8px 40px; // 👈 padding-left عشان يبعد النص عن الأيقونة
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+  }
+}

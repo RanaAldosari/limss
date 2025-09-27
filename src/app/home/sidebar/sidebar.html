@@ -1,1 +1,51 @@
-<p>sidebar works!</p>
+<div class="sidebar" style="padding: 5px;">
+  <div>
+    <div class="logo" style="display: flex; justify-content: center;">
+      <img src="assets/Icons/Frame 1000002009.svg" alt="">
+    </div>
+
+    <nav>
+      <a routerLink="samples" routerLinkActive="active">
+        <img src="assets/Icons/drop.svg" alt=""> Samples
+      </a>
+      <a routerLink="staff" routerLinkActive="active">
+        <img src="assets/Icons/profile-2user (2).svg" alt=""> Staff
+      </a>
+      <a routerLink="reports" routerLinkActive="active">
+        <img src="assets/Icons/note-2.svg" alt=""> Reports
+      </a>
+
+      <!-- Configurations -->
+      <div class="dropdown">
+      <a routerLink="configurations" routerLinkActive="active" (click)="toggleConfig()" class="dropdown-header">
+  <img src="assets/Icons/setting-3.svg" alt=""> 
+  <span>Configurations</span>
+  <img *ngIf="!configOpen" src="assets/Icons/arrow-down.svg" class="arrow">
+  <img *ngIf="configOpen" src="assets/Icons/arrow-up.svg" class="arrow">
+</a>
+
+
+        <div class="dropdown-items" *ngIf="configOpen">
+          <a routerLink="templates" routerLinkActive="active">
+            <img src="assets/Icons/element-1.svg" alt=""> Templates
+          </a>
+          <a routerLink="tests" routerLinkActive="active">
+            <img src="assets/Icons/share.svg" alt=""> Tests
+          </a>
+             <a routerLink="location" routerLinkActive="active">
+        <img src="assets/Icons/location.svg" alt=""> Location
+      </a>
+        </div>
+      </div>
+
+    </nav>
+  </div>
+
+  <div class="sidebar-footer">
+  <p>Welcome Back, {{ userName }}</p>
+  <a class="logout" (click)="logout()">
+    <img src="assets/Icons/Group 34160.svg" alt=""> Log Out
+  </a>
+</div>
+
+</div>

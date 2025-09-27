@@ -1,0 +1,80 @@
+<div class="new-template-container">
+
+  <!-- Breadcrumb -->
+  <!-- <div class="breadcrumb">
+    <span>Configurations</span>
+    <span class="divider">›</span>
+    <span>Templates</span>
+    <span class="divider">›</span>
+    <span class="current">New Template</span>
+    <button class="save-btn" (click)="saveTemplate()">Save</button>
+  </div> -->
+<div class="breadcrumb">
+  <!-- <span>Configurations</span>
+  <span class="divider">›</span>
+  <span>Templates</span>
+  <span class="divider">›</span>
+  <span class="current">New Template</span> -->
+  <button class="save-btn" (click)="saveTemplate()">Save</button>
+</div>
+
+  <!-- Form -->
+  <div class="form-sections">
+
+    <!-- Template Info -->
+    <div class="card">
+      <h5>
+        <img src="assets/Icons/element-1 (1).svg" alt="">
+        Template Info
+      </h5>
+
+     <div class="form-group tepm-info">
+  <div class="half">
+    <label>Template Name *</label>
+    <input type="text" [(ngModel)]="template.name" placeholder="Sample Login Template">
+  </div>
+  <div class="half">
+    <label>Template Code *</label>
+    <input type="text" [(ngModel)]="template.code" placeholder="116">
+  </div>  
+</div>
+
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="template.description" placeholder="Standard Template For Water Quality Testing"></textarea>
+      </div>
+
+      <div style="display: flex;">
+        <input type="radio" [(ngModel)]="template.active">
+        <p>Active</p>
+      </div>
+
+    </div>
+
+    <!-- Template Settings -->
+    <div class="card">
+      <h5>
+        <img src="assets/Icons/setting.svg" alt="">
+        Template Settings
+      </h5>
+
+    <div class="settings-grid">
+  <label><input type="radio" name="templateSetting" value="showSite"> Show Site</label>
+  <label><input type="radio" name="templateSetting" value="showPlant"> Show Plant</label>
+  <label><input type="radio" name="templateSetting" value="showProcessUnit"> Show Process Unit</label>
+  <label><input type="radio" name="templateSetting" value="showSamplingPoint"> Show Sampling Point</label>
+  <label><input type="radio" name="templateSetting" value="showProduct"> Show Product</label>
+  <label><input type="radio" name="templateSetting" value="showGrade"> Show Grade</label>
+  <label><input type="radio" name="templateSetting" value="showStage"> Show Stage</label>
+  <label><input type="radio" name="templateSetting" value="showTestList"> Show Test List</label>
+  <label><input type="radio" name="templateSetting" value="showSampleNumber"> Show Sample Number</label>
+  <label><input type="radio" name="templateSetting" value="showSamplingDate"> Show Sampling Date</label>
+  <label><input type="radio" name="templateSetting" value="showReceivedDate"> Show Received Date</label>
+  <label><input type="radio" name="templateSetting" value="showCollectorName"> Show Collector Name</label>
+  <label><input type="radio" name="templateSetting" value="showPriority"> Show Priority</label>
+  <label><input type="radio" name="templateSetting" value="showLocation"> Show Location</label>
+</div>
+    </div>
+  </div>
+</div>

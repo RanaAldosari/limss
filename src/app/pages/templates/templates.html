@@ -1,0 +1,50 @@
+<div class="templates-container">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span>Configurations</span>
+    <span class="divider">›</span>
+    <span class="current">Templates</span>
+  </div>
+
+<div class="header">
+ <div class="search-filter">
+  <img src="assets/Icons/search-normal.svg" alt="Search">
+  <input 
+    type="text" 
+    placeholder="Search" 
+    [(ngModel)]="searchTerm"
+    (input)="onSearch()"
+  >
+</div>
+
+
+  <button class="add-btn" [routerLink]="['/home/new-template']">
+    Add Template
+  </button>
+</div>
+
+
+  <!-- Table -->
+  <div class="table">
+    <div class="table-header">
+      <div>Template Name</div>
+      <div><img src="assets/Icons/arrow-swap.svg" alt="" srcset=""> Template Code</div>
+      <div><img src="assets/Icons/arrow-swap.svg" alt="" srcset=""> Template Status <img src="assets/Icons/arrow-swap.svg" alt="" srcset=""></div>
+    </div>
+
+<div class="table-body">
+  <div class="row" *ngFor="let t of filteredTemplates">
+    <div>{{ t.name }}</div>
+    <div>{{ t.code }}</div>
+    <div>
+      <span [ngClass]="t.status === 'Active' ? 'status-active' : 'status-inactive'">
+        {{ t.status }}
+      </span>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+

@@ -1,0 +1,47 @@
+.staff-container {
+  background: #f9fafc;
+  padding: 20px;
+  border-radius: 12px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    h3 {
+      font-weight: 600;
+      color: #444;
+    }
+
+    .btn {
+      border-radius: 8px;
+    }
+  }
+
+  .search-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    input {
+      flex: 1;
+    }
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+    table {
+      th {
+        color: #666;
+        font-weight: 600;
+      }
+      td {
+        color: #333;
+      }
+    }
+  }
+}

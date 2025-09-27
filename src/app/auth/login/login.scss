@@ -1,4 +1,4 @@
-// Variables for consistent styling
+
 $primary-color: #5C69F8;
 $primary-light-color: #DEE8FF;
 $error-color: #e74c3c;
@@ -7,7 +7,6 @@ $text-primary: #616161;
 $text-secondary: #9E9E9E;
 $shadow-color: rgba(136, 161, 227, 0.1);
 
-// Media query breakpoints
 $mobile: 480px;
 $tablet: 768px;
 $desktop: 1024px;
@@ -251,7 +250,6 @@ $desktop: 1024px;
   }
 }
 
-// Media queries for responsive design
 @media (max-width: 768px) {
   .login-page {
     flex-direction: column;

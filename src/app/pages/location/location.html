@@ -1,0 +1,41 @@
+<div class="header-bar">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'building'" (click)="setActiveTab('building')">Building</button>
+    <button [class.active]="activeTab === 'room'" (click)="setActiveTab('room')">Room</button>
+    <button [class.active]="activeTab === 'storage-unit'" (click)="setActiveTab('storage-unit')">Storage Unit</button>
+    <button [class.active]="activeTab === 'shelf'" (click)="setActiveTab('shelf')">Shelf</button>
+    <button [class.active]="activeTab === 'box'" (click)="setActiveTab('box')">Box / Drawer</button>
+  </div>
+
+  <button class="add-btn" (click)="onAdd()"> Add {{ activeTab | titlecase }}</button>
+</div>
+
+<!-- tabel -->
+<div *ngIf="!showForm" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let col of displayedColumns">{{ col | titlecase }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of tableData">
+        <td *ngFor="let col of displayedColumns">{{ row[col] }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- form -->
+<div *ngIf="showForm" class="form-container">
+  <h3>Add {{ activeTab | titlecase }}</h3>
+
+  <input placeholder="Name" [(ngModel)]="formData.name">
+  <input placeholder="Code" [(ngModel)]="formData.code">
+  <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+
+  <div class="form-actions">
+    <button class="save-btn" (click)="onSave()">Save</button>
+    <button class="cancel-btn" (click)="onCancel()">Cancel</button>
+  </div>
+</div>
