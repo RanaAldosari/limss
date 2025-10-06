@@ -170,74 +170,49 @@ export class TestMain implements OnInit {
   }
 
   // ===== Load tests =====
- private loadTests(sampleId?: string): void {
-  this.t_loading = true;
-  this.t_error = '';
-  this.tests = [];
-  this.selectedTestIds.clear();
+  private loadTests(sampleId?: string) {
+    this.t_loading = true; this.t_error = '';
+    this.tests = []; this.selectedTestIds.clear();
 
-  // Build URL with query parameter
-  const url = sampleId
-    ? `${this.API_TESTS_BASE}?sampleId=${encodeURIComponent(sampleId)}`
-    : this.API_TESTS_BASE;
+    const url = sampleId
+      ? `${this.API_TESTS_BASE}?sampleId=${encodeURIComponent(sampleId)}`
+      : `${this.API_TESTS_BASE}`;
 
-  // ✅ CORRECT: Use this.headers directly (since it's a getter)
-  this.http.get<any>(url, this.headers).subscribe({
-    next: (res) => {
-      const arr: TestDoc[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
-      
-      if (!arr.length) {
-        this.tests = [];
-        this.t_loading = false;
-        return;
-      }
+    this.http.get<any>(url,this.headers).subscribe({
+      next: (res) => {
+        const arr: TestDoc[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        if (!arr.length) { this.t_loading = false; return; }
 
-      const sampleIds = Array.from(new Set(arr.map(t => t.sampleId).filter(Boolean)));
-      
-      if (!sampleIds.length) {
-        this.tests = arr.map(t => this.toRow(t, undefined));
-        this.t_loading = false;
-        return;
-      }
-
-      // ✅ CORRECT: Use this.headers for each request
-      const calls = sampleIds.map(id => 
-        this.http.get<any>(`${this.API_SAMPLES_BASE}/${id}`, this.headers)
-      );
-
-      forkJoin(calls).subscribe({
-        next: (samplesRes) => {
-          const byId: Record<string, SampleDoc> = {};
-          
-          for (const r of samplesRes) {
-            const s: SampleDoc = r?.data || r || {};
-            if (s?._id) {
-              byId[s._id] = s;
-            }
-          }
-          
-          this.tests = arr.map(t => this.toRow(t, byId[t.sampleId]));
-          this.t_loading = false;
-        },
-        error: (sampleErr) => {
-          console.warn('Failed to load sample details:', sampleErr);
+        const sampleIds = Array.from(new Set(arr.map(t => t.sampleId).filter(Boolean)));
+        if (!sampleIds.length) {
           this.tests = arr.map(t => this.toRow(t, undefined));
           this.t_loading = false;
+          return;
         }
-      });
-    },
-    error: (err) => {
-      console.error('Failed to load tests:', err);
-      this.t_loading = false;
-      this.t_error = err?.error?.error?.message || 'Failed to load tests';
-      
-      if (err.status === 401) {
-        this.t_error = 'Authentication failed. Please login again.';
+
+        const calls = sampleIds.map(id => this.http.get<any>(`${this.API_SAMPLES_BASE}/${id}`, this.headers));
+        forkJoin(calls).subscribe({
+          next: (samplesRes) => {
+            const byId: Record<string, SampleDoc> = {};
+            for (const r of samplesRes) {
+              const s: SampleDoc = r?.data || r || {};
+              if (s?._id) byId[s._id] = s;
+            }
+            this.tests = arr.map(t => this.toRow(t, byId[t.sampleId]));
+            this.t_loading = false;
+          },
+          error: () => {
+            this.tests = arr.map(t => this.toRow(t, undefined));
+            this.t_loading = false;
+          }
+        });
+      },
+      error: (err) => {
+        this.t_loading = false;
+        this.t_error = err?.error?.error?.message || 'Failed to load tests';
       }
-    }
-  });
-}
- 
+    });
+  }
 
   private toRow(t: TestDoc, s?: SampleDoc): TestRow {
     const sampleNumber = s?.sampleNumber || t.sampleId;
