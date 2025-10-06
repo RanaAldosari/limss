@@ -1,11 +1,7 @@
 <div class="register-page">
   <div class="left-side">
-    <img
-      class="bg-image"
-      src="assets/Images/loginBackground.svg"
-      alt="Register background"
-      onerror="this.onerror=null; this.src='assets/images/fallback-bg.svg'"
-    />
+    <img class="bg-image" src="assets/Images/loginBackground.svg" alt="Register background"
+      onerror="this.onerror=null; this.src='assets/images/fallback-bg.svg'" />
     <div class="logo-container">
       <div class="lims-logo">
         <img src="assets/Images/limslogoregester.png" alt="Logo" />
@@ -13,17 +9,12 @@
     </div>
   </div>
 
-  <!-- Divider -->
   <div class="blue-divider"></div>
 
   <div class="right-side">
     <div class="register-container">
       <h1 class="register-title">Create Account</h1>
 
-      <!-- Error message -->
-      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-
-      <!-- Register form -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <!-- Lab Info -->
         <div class="form-section">
@@ -31,29 +22,33 @@
 
           <div class="form-group">
             <label for="labName">Lab Name</label>
-            <input
-              id="labName"
-              type="text"
-              formControlName="labName"
-              placeholder="Enter lab name"
-            />
+            <input id="labName" type="text" formControlName="labName" placeholder="Enter lab name"
+              [class.invalid]="registerForm.get('labName')?.touched && registerForm.get('labName')?.invalid" />
+            <div class="validation-error" *ngIf="registerForm.get('labName')?.touched && registerForm.get('labName')?.invalid">
+              <span *ngIf="registerForm.get('labName')?.errors?.['required']">Lab name is required.</span>
+              <span *ngIf="registerForm.get('labName')?.errors?.['minlength']">Must be at least 3 characters.</span>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="city">City</label>
-            <input
-              id="city"
-              type="text"
-              formControlName="city"
-              placeholder="Enter city"
-            />
+            <input id="city" type="text" formControlName="city" placeholder="Enter city"
+              [class.invalid]="registerForm.get('city')?.touched && registerForm.get('city')?.invalid" />
+            <div class="validation-error" *ngIf="registerForm.get('city')?.touched && registerForm.get('city')?.invalid">
+              <span *ngIf="registerForm.get('city')?.errors?.['required']">City is required.</span>
+              <span *ngIf="registerForm.get('city')?.errors?.['minlength']">Must be at least 2 characters.</span>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="plan">Plan</label>
-            <select id="plan" formControlName="plan">
+            <select id="plan" formControlName="plan"
+              [class.invalid]="registerForm.get('plan')?.touched && registerForm.get('plan')?.invalid">
               <option value="basic">Basic</option>
             </select>
+            <div class="validation-error" *ngIf="registerForm.get('plan')?.touched && registerForm.get('plan')?.invalid">
+              <span *ngIf="registerForm.get('plan')?.errors?.['required']">Plan is required.</span>
+            </div>
           </div>
         </div>
 
@@ -63,44 +58,47 @@
 
           <div class="form-group">
             <label for="fullName">Full Name</label>
-            <input
-              id="fullName"
-              type="text"
-              formControlName="fullName"
-              placeholder="Enter full name"
-            />
+            <input id="fullName" type="text" formControlName="fullName" placeholder="Enter full name"
+              [class.invalid]="registerForm.get('adminUser.fullName')?.touched && registerForm.get('adminUser.fullName')?.invalid" />
+            <div class="validation-error"
+              *ngIf="registerForm.get('adminUser.fullName')?.touched && registerForm.get('adminUser.fullName')?.invalid">
+              <span *ngIf="registerForm.get('adminUser.fullName')?.errors?.['required']">Full name is required.</span>
+              <span *ngIf="registerForm.get('adminUser.fullName')?.errors?.['minlength']">Must be at least 3 characters.</span>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              formControlName="email"
-              placeholder="Enter email"
-            />
+            <input id="email" type="email" formControlName="email" placeholder="Enter email"
+              [class.invalid]="registerForm.get('adminUser.email')?.touched && registerForm.get('adminUser.email')?.invalid" />
+            <div class="validation-error"
+              *ngIf="registerForm.get('adminUser.email')?.touched && registerForm.get('adminUser.email')?.invalid">
+              <span *ngIf="registerForm.get('adminUser.email')?.errors?.['required']">Email is required.</span>
+              <span *ngIf="registerForm.get('adminUser.email')?.errors?.['email']">Please enter a valid email.</span>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              formControlName="password"
-              placeholder="Enter password"
-            />
+            <input id="password" type="password" formControlName="password" placeholder="Enter password"
+              [class.invalid]="registerForm.get('adminUser.password')?.touched && registerForm.get('adminUser.password')?.invalid" />
+            <div class="validation-error"
+              *ngIf="registerForm.get('adminUser.password')?.touched && registerForm.get('adminUser.password')?.invalid">
+              <span *ngIf="registerForm.get('adminUser.password')?.errors?.['required']">Password is required.</span>
+              <span *ngIf="registerForm.get('adminUser.password')?.errors?.['minlength']">Minimum 8 characters.</span>
+              <span *ngIf="registerForm.get('adminUser.password')?.errors?.['pattern']">
+                Must include uppercase, lowercase, number, and special character.
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Actions -->
         <button type="submit" class="register-button" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Registering...' : 'Register' }}
         </button>
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-        <!-- Link back to login -->
-        <a routerLink="/login" class="login-link">
-          Already have an account? Log In
-        </a>
+        <a routerLink="/login" class="login-link">Already have an account? Log In</a>
       </form>
     </div>
   </div>

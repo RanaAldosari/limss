@@ -1,0 +1,245 @@
+<div class="page">
+  <div class="pagee">
+    <div class="titlee">
+     <img src="assets/Icons/setting-3.png" alt="settings">
+     <span class="crumbs">
+       <a class="crumb-link">Configurations</a> <span class="sep">›</span>
+       <span class="here">Roles</span>
+             <span class="here"> > Settings</span>
+     </span>
+   </div>
+  </div>
+
+
+  <div class="grid">
+    <!-- LEFT: Roles list -->
+    <div class="card left">
+      <div class="title-row">
+        <div class="title">Roles</div>
+        <button class="primary" (click)="startAddRole()">Add Role</button>
+      </div>
+
+      <div class="search">
+        <input type="text" [(ngModel)]="roleSearch" placeholder="Search by name or description" />
+      </div>
+
+      <!-- Role form -->
+      <div class="role-form" *ngIf="showRoleForm">
+        <div class="form-row">
+          <label>Name <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="roleForm.name" placeholder="Lab Technician" />
+        </div>
+        <div class="form-row">
+          <label>Description</label>
+          <textarea rows="2" [(ngModel)]="roleForm.description" placeholder="What this role is for"></textarea>
+        </div>
+        <div class="form-row inline">
+          <label>Active</label>
+          <input type="checkbox" [(ngModel)]="roleForm.active" />
+        </div>
+        <div class="form-actions">
+          <button class="ghost" (click)="cancelRoleForm()">Cancel</button>
+          <button class="primary" [disabled]="roleSaving" (click)="saveRole()">
+            {{ roleSaving ? 'Saving…' : (roleEditing ? 'Update' : 'Create') }}
+          </button>
+        </div>
+        <hr />
+      </div>
+
+      <!-- Roles list -->
+      <div class="list" *ngIf="!rolesLoading; else rolesLoadingTpl">
+        <div
+          class="role-item"
+          *ngFor="let r of filteredRoles()"
+          [class.active]="selectedRole?._id === r._id"
+        >
+          <button class="stretch" (click)="selectRole(r)">
+            <div class="role-name">{{ r.name }}</div>
+            <div class="role-desc" *ngIf="r.description">{{ r.description }}</div>
+            <div class="meta">
+              <span class="badge" [class.badge--active]="r.active" [class.badge--inactive]="!r.active">
+                {{ r.active ? 'Active' : 'Inactive' }}
+              </span>
+              <span class="date">{{ fmtDate(r.createdAt) }}</span>
+            </div>
+          </button>
+
+          <div class="item-actions">
+            <button class="link" (click)="toggleRoleActive(r)">Toggle</button>
+            <button class="ghost" (click)="startEditRole(r)">Edit</button>
+            <button class="danger" (click)="deleteRole(r)">Delete</button>
+          </div>
+        </div>
+
+        <div class="empty" *ngIf="filteredRoles().length === 0">No roles found.</div>
+      </div>
+
+      <ng-template #rolesLoadingTpl>
+        <div class="empty">Loading roles…</div>
+      </ng-template>
+    </div>
+
+    <!-- RIGHT: Assign + Catalog -->
+    <div class="right-col">
+      <!-- Assign: Role Permissions -->
+      <div class="card">
+        <div class="title">Role Permissions</div>
+        <div *ngIf="!selectedRole" class="empty">Select a role from the left to manage its permissions.</div>
+
+        <ng-container *ngIf="selectedRole">
+          <div class="sub">For role: <b>{{ selectedRole.name }}</b></div>
+
+          <div class="add-row">
+            <select [(ngModel)]="pickFunctionCode">
+              <option value="">-- Pick a function --</option>
+              <option *ngFor="let f of allActiveFunctions" [value]="f.code">
+                {{ f.code }} • {{ f.name || f.category || '—' }}
+              </option>
+            </select>
+            <button class="primary" (click)="addFunctionByPick()" [disabled]="!pickFunctionCode">Add</button>
+          </div>
+
+          <div class="add-row">
+            <input type="text" [(ngModel)]="addByCodeValue" placeholder="Add by code e.g. analysis.create, analysis.view" />
+            <button class="ghost" (click)="addFunctionByCode()" [disabled]="!addByCodeValue.trim()">Add by code</button>
+          </div>
+
+          <div class="row head" *ngIf="roleFunctions.length">
+            <div class="col code">Code</div>
+            <div class="col">Name</div>
+            <div class="col">Category</div>
+            <div class="col actions">Actions</div>
+          </div>
+
+          <div class="row" *ngFor="let f of roleFunctions">
+            <div class="col code">{{ f.code }}</div>
+            <div class="col">{{ f.name || '—' }}</div>
+            <div class="col">{{ f.category || '—' }}</div>
+            <div class="col actions">
+              <button class="danger" (click)="removeRoleFunction(f)">Remove</button>
+            </div>
+          </div>
+
+          <div class="empty" *ngIf="!roleFunctions.length">No functions yet. Add permissions to make this role useful.</div>
+        </ng-container>
+      </div>
+
+      <!-- Role Functions Catalog -->
+      <div class="card">
+        <div class="title-row">
+          <div class="title">Role Functions Catalog</div>
+          <!-- <button class="primary" (click)="startAddFn()">Add Function</button> -->
+        </div>
+
+        <div *ngIf="!showFnForm" class="catalog-list">
+          <div class="row head">
+            <div class="col code">Function Code</div>
+            <div class="col">Name</div>
+            <div class="col">Category</div>
+            <div class="col">Active</div>
+            <div class="col actions">Actions</div>
+          </div>
+
+          <div class="row" *ngFor="let f of functions">
+            <div class="col code">{{ f.code }}</div>
+            <div class="col">{{ f.name || '—' }}</div>
+            <div class="col">{{ f.category || '—' }}</div>
+            <div class="col status">
+              <span class="badge" [class.badge--active]="f.active" [class.badge--inactive]="!f.active">
+                {{ f.active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div class="col actions">
+              <button class="link" (click)="toggleFnActive(f)">Toggle</button>
+              <button class="ghost" (click)="startEditFn(f)">Edit</button>
+              <!-- <button class="danger" (click)="deleteFn(f)">Delete</button> -->
+            </div>
+          </div>
+
+          <div class="empty" *ngIf="!functions.length && !fLoading">No role functions yet.</div>
+          <div class="empty" *ngIf="fLoading">Loading functions…</div>
+        </div>
+
+        <!-- FORM -->
+        <div *ngIf="showFnForm" class="fn-form">
+          <div class="form-header">
+            <div class="sub">{{ fnEditing ? 'Edit Function' : 'Add Function' }}</div>
+            <div class="form-actions">
+              <button class="ghost" (click)="cancelFn()">Cancel</button>
+              <button class="primary" [disabled]="fnSaving" (click)="saveFn()">
+                {{ fnSaving ? 'Saving…' : 'Save' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Function Code <span class="req">*</span></label>
+              <input type="text" [(ngModel)]="fnForm.code" [readonly]="fnEditing" placeholder="analysis.create" />
+            </div>
+
+            <!-- Name -->
+            <div class="form-row">
+              <label>Name</label>
+              <ng-container *ngIf="!useCustomName; else customName">
+                <select [ngModel]="fnForm.name || ''" (ngModelChange)="onSelectName($event)">
+                  <option [ngValue]="''">— choose —</option>
+                  <option *ngFor="let n of namesSuggestions" [ngValue]="n">{{ n }}</option>
+                  <option [ngValue]="'__other__'">Other…</option>
+                </select>
+              </ng-container>
+              <ng-template #customName>
+                <div class="inline-row">
+                  <input type="text" [(ngModel)]="fnForm.name" placeholder="Create Analysis" />
+                  <button class="link" (click)="useCustomName=false">Use list</button>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Module -->
+            <div class="form-row">
+              <label>Module</label>
+              <ng-container *ngIf="!useCustomModule; else customModule">
+                <select [ngModel]="fnForm.module || ''" (ngModelChange)="onSelectModule($event)">
+                  <option [ngValue]="''">— choose —</option>
+                  <option *ngFor="let m of modulesList" [ngValue]="m">{{ m }}</option>
+                  <option [ngValue]="'__other__'">Other…</option>
+                </select>
+              </ng-container>
+              <ng-template #customModule>
+                <div class="inline-row">
+                  <input type="text" [(ngModel)]="fnForm.module" placeholder="analysis / samples / results / admin" />
+                  <button class="link" (click)="useCustomModule=false">Use list</button>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Category -->
+            <div class="form-row">
+              <label>Category</label>
+              <ng-container *ngIf="!useCustomCategory; else customCategory">
+                <select [ngModel]="fnForm.category || ''" (ngModelChange)="onSelectCategory($event)">
+                  <option [ngValue]="''">— choose —</option>
+                  <option *ngFor="let c of categoriesList" [ngValue]="c">{{ c }}</option>
+                  <option [ngValue]="'__other__'">Other…</option>
+                </select>
+              </ng-container>
+              <ng-template #customCategory>
+                <div class="inline-row">
+                  <input type="text" [(ngModel)]="fnForm.category" placeholder="master_data / operations …" />
+                  <button class="link" (click)="useCustomCategory=false">Use list</button>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="form-row inline">
+              <label>Active</label>
+              <input type="checkbox" [(ngModel)]="fnForm.active" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

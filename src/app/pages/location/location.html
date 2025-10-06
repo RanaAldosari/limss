@@ -1,41 +1,91 @@
-<div class="header-bar">
-  <div class="tabs">
-    <button [class.active]="activeTab === 'building'" (click)="setActiveTab('building')">Building</button>
-    <button [class.active]="activeTab === 'room'" (click)="setActiveTab('room')">Room</button>
-    <button [class.active]="activeTab === 'storage-unit'" (click)="setActiveTab('storage-unit')">Storage Unit</button>
-    <button [class.active]="activeTab === 'shelf'" (click)="setActiveTab('shelf')">Shelf</button>
-    <button [class.active]="activeTab === 'box'" (click)="setActiveTab('box')">Box / Drawer</button>
-  </div>
+<!-- HEADER (Breadcrumb + Actions) -->
+<div class="header-shell">
+  <div class="header-bar">
+    <div class="crumbs">
+      <img src="assets/Icons/setting-3.png" alt="icon" />
+      <ng-container *ngIf="!showForm; else addCrumb">
+        <p class="crumb">Configurations > Location > {{ activeTitle }}</p>
+      </ng-container>
+      <ng-template #addCrumb>
+        <p class="crumb">{{ activeTitle }}</p>
+        <p class="sep">›</p>
+        <p class="crumb active"> {{ activeTitle }}</p>
+      </ng-template>
+    </div>
 
-  <button class="add-btn" (click)="onAdd()"> Add {{ activeTab | titlecase }}</button>
+    <div class="header-actions" *ngIf="!showForm; else formActions">
+      <button class="btn primary" (click)="onAdd()">Add {{ activeTitle }}</button>
+    </div>
+
+    <ng-template #formActions>
+      <div class="header-actions">
+        <button class="btn primary" (click)="onSave()" [disabled]="saving || formInvalid">
+          {{ saving ? 'Saving…' : 'Save' }}
+        </button>
+        <button class="btn ghost" type="button" (click)="onCancel()" [disabled]="saving">Cancel</button>
+      </div>
+    </ng-template>
+  </div>
+ 
+<div class="tabs" *ngIf="!showForm" aria-hidden="{{ showForm }}">
+  <button [class.active]="activeTab==='building'" (click)="setActiveTab('building')">Building</button>
+  <button [class.active]="activeTab==='room'" (click)="setActiveTab('room')">Room</button>
+  <button [class.active]="activeTab==='storage-unit'" (click)="setActiveTab('storage-unit')">Storage Unit</button>
+  <button [class.active]="activeTab==='shelf'" (click)="setActiveTab('shelf')">Shelf</button>
+  <button [class.active]="activeTab==='box'" (click)="setActiveTab('box')">Box / Drawer</button>
 </div>
 
-<!-- tabel -->
+ <div class="search-filter" *ngIf="!showForm">
+    <div class="search-input">
+      <img src="assets/Icons/search-normal.svg" alt="Search" />
+      <input type="text" placeholder="Search"
+             [(ngModel)]="searchTerm" (input)="onSearch()" />
+      <button class="clear" *ngIf="searchTerm" (click)="clearSearch()">×</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
 <div *ngIf="!showForm" class="table-container">
-  <table>
+  <table class="staff-table">
+    <colgroup>
+      <col style="width: 60%" />
+      <col style="width: 40%" />
+    </colgroup>
     <thead>
       <tr>
-        <th *ngFor="let col of displayedColumns">{{ col | titlecase }}</th>
+        <th>Name</th>
+        <th>Code</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of tableData">
-        <td *ngFor="let col of displayedColumns">{{ row[col] }}</td>
+      <tr *ngFor="let row of filteredData">
+        <td>{{ row.name }}</td>
+        <td>{{ row.code }}</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<!-- form -->
-<div *ngIf="showForm" class="form-container">
-  <h3>Add {{ activeTab | titlecase }}</h3>
-
-  <input placeholder="Name" [(ngModel)]="formData.name">
-  <input placeholder="Code" [(ngModel)]="formData.code">
-  <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
-
-  <div class="form-actions">
-    <button class="save-btn" (click)="onSave()">Save</button>
-    <button class="cancel-btn" (click)="onCancel()">Cancel</button>
+<!-- FORM -->
+<div *ngIf="showForm" class="form-card">
+  <div class="form-head">
+    <img src="assets/Icons/warning-2.svg" alt="">
+    <p class="form-title"> {{ activeTitle }}</p>
   </div>
+
+  <form class="form-grid">
+    <div class="form-col">
+      <label>Name <span>*</span></label>
+      <input type="text" [(ngModel)]="formData.name" name="name" required />
+
+      <label>Code <span>*</span></label>
+      <input type="text" [(ngModel)]="formData.code" name="code" required />
+    </div>
+
+    <div class="form-col">
+      <label>Description</label>
+      <textarea [(ngModel)]="formData.description" name="description" rows="5"></textarea>
+    </div>
+  </form>
 </div>

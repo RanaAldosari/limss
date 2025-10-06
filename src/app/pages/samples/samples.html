@@ -1,1 +1,54 @@
-<p>samples works!</p>
+<div class="samples-header">
+  <div class="title" style="display: flex;">
+    <img src="assets/Icons/glass.svg" alt="">
+    <p>Samples</p>
+  </div>
+  <button class="log-btn" (click)="goToLogSample()">Log Sample</button>
+</div>
+
+<div class="search-bar">
+  <!-- <span class="search-ico">🔎</span> -->
+  <img class="search-ico" src="assets/Icons/search-normal.svg" alt="" srcset="">
+  <input
+    type="text"
+    placeholder="Search"
+    [(ngModel)]="searchTerm"
+  />
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Sample Number</th>
+        <th>Priority</th>
+        <th>Group Name</th>
+        <th>Status</th>
+        <th>Test</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let sample of filteredSamples"
+          (click)="viewSample(sample)" class="row-click">
+        <td>{{ sample.sampleNumber }}</td>
+        <td>{{ sample.priority }}</td>
+        <td>{{ sample.groupName }}</td>
+        <td>
+          <span class="status" [ngClass]="(sample.displayStatus || '').toLowerCase()">
+            {{ sample.displayStatus }}
+          </span>
+        </td>
+        <td>
+          {{ sample.testDone }}/{{ sample.testTotal }}
+          ({{ getProgress(sample) | number:'1.0-0' }}%)
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="getProgress(sample)"></div>
+          </div>
+        </td>
+        <td>{{ sample.createdAt }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,102 @@
+.samples-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+background-color: white;
+  padding: .5rem 1rem;
+  border-radius: 15px;
+  p {
+    font-size: 16px;
+    font-weight: 400;
+    color: #5C69F8;
+  }
+
+  .log-btn {
+    background: #4f46e5;
+    color: #fff;
+    padding: .6rem 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 100;
+  }
+}
+
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      font-size: 14px;
+      color: #555;
+      font-weight: 600;
+    }
+  }
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status.unreceived { color: #8b5cf6; }   /* purple */
+.status.received { color: #f59e0b; }     /* yellow */
+.status.rejected { color: #ef4444; }     /* red */
+.status.cancelled { color: #6b7280; }    /* gray */
+.status.completed { color: #22c55e; }    /* green */
+.status.in-progress { color: #3b82f6; }  /* blue */
+.status.authorized { color: #0ea5e9; }   /* cyan */
+.status.incomplete { color: #9ca3af; }   /* light gray */
+
+
+.progress-bar {
+  background: #f3f4f6;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 6px;
+  margin-top: 4px;
+
+  .progress {
+    height: 100%;
+    background: #4f46e5;
+  }
+}
+
+
+.clickable {
+  cursor: pointer;
+  // color: #007bff;
+}
+.clickable:hover {
+  text-decoration: underline;
+}
+.row-click {
+  cursor: pointer;
+}
+.row-click:hover {
+  // background: #f6f8fb;
+}
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border-radius: 999px; padding: 8px 14px;
+  width: 300px; box-shadow: 0 8px 24px rgba(17,24,39,.06);
+  margin: 8px 0 14px;
+
+  .search-ico { width: 16px; height: 16px; opacity: .6; }
+  input {
+    border: 0; outline: 0; flex: 1; padding: 6px 10px; font-size: 14px; background: transparent;
+  }
+}

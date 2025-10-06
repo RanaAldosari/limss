@@ -287,3 +287,21 @@ $desktop: 1024px;
     }
   }
 } 
+
+.input-container input.invalid,
+select.invalid {
+  border-color: #e53935;
+}
+
+.validation-error {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #e53935;
+}
+
+.error-message {
+  margin-top: 10px;
+  color: #e53935;
+  text-align: start;
+}

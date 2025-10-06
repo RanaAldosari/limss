@@ -1,80 +1,95 @@
-<div class="new-template-container">
-
-  <!-- Breadcrumb -->
-  <!-- <div class="breadcrumb">
-    <span>Configurations</span>
-    <span class="divider">›</span>
-    <span>Templates</span>
-    <span class="divider">›</span>
-    <span class="current">New Template</span>
-    <button class="save-btn" (click)="saveTemplate()">Save</button>
-  </div> -->
-<div class="breadcrumb">
-  <!-- <span>Configurations</span>
-  <span class="divider">›</span>
-  <span>Templates</span>
-  <span class="divider">›</span>
-  <span class="current">New Template</span> -->
-  <button class="save-btn" (click)="saveTemplate()">Save</button>
-</div>
-
-  <!-- Form -->
-  <div class="form-sections">
-
-    <!-- Template Info -->
-    <div class="card">
-      <h5>
-        <img src="assets/Icons/element-1 (1).svg" alt="">
-        Template Info
-      </h5>
-
-     <div class="form-group tepm-info">
-  <div class="half">
-    <label>Template Name *</label>
-    <input type="text" [(ngModel)]="template.name" placeholder="Sample Login Template">
-  </div>
-  <div class="half">
-    <label>Template Code *</label>
-    <input type="text" [(ngModel)]="template.code" placeholder="116">
-  </div>  
-</div>
-
-
-      <div class="form-group">
-        <label>Description</label>
-        <textarea [(ngModel)]="template.description" placeholder="Standard Template For Water Quality Testing"></textarea>
-      </div>
-
-      <div style="display: flex;">
-        <input type="radio" [(ngModel)]="template.active">
-        <p>Active</p>
-      </div>
-
+<div class="page new-template-page">
+  <!-- Header -->
+  <div class="header-bar card">
+    <div class="crumbs">
+      <img src="assets/Icons/setting-3.png" alt="icon" />
+      <p class="crumb">Configurations › Templates › <b>New Template</b></p>
     </div>
 
-    <!-- Template Settings -->
-    <div class="card">
-      <h5>
-        <img src="assets/Icons/setting.svg" alt="">
-        Template Settings
-      </h5>
+    <div class="actions">
+      <button class="btn primary" (click)="saveTemplate()" [disabled]="saving">
+        {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+      <button class="btn ghost" (click)="onCancel()">Cancel</button>
+    </div>
+  </div>
 
-    <div class="settings-grid">
-  <label><input type="radio" name="templateSetting" value="showSite"> Show Site</label>
-  <label><input type="radio" name="templateSetting" value="showPlant"> Show Plant</label>
-  <label><input type="radio" name="templateSetting" value="showProcessUnit"> Show Process Unit</label>
-  <label><input type="radio" name="templateSetting" value="showSamplingPoint"> Show Sampling Point</label>
-  <label><input type="radio" name="templateSetting" value="showProduct"> Show Product</label>
-  <label><input type="radio" name="templateSetting" value="showGrade"> Show Grade</label>
-  <label><input type="radio" name="templateSetting" value="showStage"> Show Stage</label>
-  <label><input type="radio" name="templateSetting" value="showTestList"> Show Test List</label>
-  <label><input type="radio" name="templateSetting" value="showSampleNumber"> Show Sample Number</label>
-  <label><input type="radio" name="templateSetting" value="showSamplingDate"> Show Sampling Date</label>
-  <label><input type="radio" name="templateSetting" value="showReceivedDate"> Show Received Date</label>
-  <label><input type="radio" name="templateSetting" value="showCollectorName"> Show Collector Name</label>
-  <label><input type="radio" name="templateSetting" value="showPriority"> Show Priority</label>
-  <label><input type="radio" name="templateSetting" value="showLocation"> Show Location</label>
-</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">
+        <img src="assets/Icons/element-1 (1).svg" alt="" />
+        <span>Template Info</span>
+      </div>
+
+      <div class="form two-col">
+        <div class="field">
+          <label class="required">Template Name</label>
+          <input type="text" [(ngModel)]="template.name" placeholder="Sample Login Template" />
+        </div>
+
+        <div class="field">
+          <label class="required">Template Code</label>
+          <input type="text" [(ngModel)]="template.code" placeholder="116" />
+        </div>
+
+        <div class="field col-span-2">
+          <label>Description</label>
+          <textarea [(ngModel)]="template.description" placeholder="Standard Template For Water Quality Testing"></textarea>
+        </div>
+
+        <!-- Status switch -->
+        <div class="field col-span-2 inline">
+          <label>Status</label>
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="template.active" />
+            <span class="slider"></span>
+          </label>
+          <span class="state" [class.on]="template.active">
+            {{ template.active ? 'Active' : 'Deactive' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <img src="assets/Icons/setting.svg" alt="" />
+        <span>Template Settings</span>
+      </div>
+
+      <div class="settings-grid">
+        <div class="setting-row" *ngFor="let key of settingKeys">
+          <div class="name">
+            {{ labels[key] || key }}
+            <small class="req-badge" *ngIf="template.settings[key]?.required">required</small>
+            <small class="lock-badge" *ngIf="isAlwaysRequired(key)"></small>
+          </div>
+
+          <div class="controls">
+            <!-- Show -->
+            <label class="check">
+              <input
+                type="checkbox"
+                [checked]="template.settings[key]?.visible"
+                (change)="onToggleVisible(key, $event.target.checked)"
+                [disabled]="isAlwaysRequired(key)"
+              />
+              <span class="lbl">Show</span>
+            </label>
+
+            <label class="check" *ngIf="template.settings[key]?.visible">
+              <input
+                type="checkbox"
+                [checked]="template.settings[key]?.required"
+                (change)="onToggleRequired(key, $event.target.checked)"
+                [disabled]="isAlwaysRequired(key)"
+              />
+              <span class="lbl">Required</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

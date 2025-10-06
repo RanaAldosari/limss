@@ -1,43 +1,27 @@
+<!-- login.html -->
 <div class="login-page">
   <div class="left-side">
     <img class="bg-image" src="assets/Images/loginBackground.svg" alt="Login background" onerror="this.onerror=null; this.src='assets/images/fallback-bg.svg'">
     <div class="logo-container">
       <div class="lims-logo">
-<img src="assets/Images/Frame 1000002009.svg" alt="" srcset="">
+        <img src="assets/Images/Frame 1000002009.svg" alt="">
       </div>
     </div>
   </div>
 
-  <!-- Divider -->
   <div class="blue-divider"></div>
 
   <div class="right-side">
     <div class="login-container">
       <div class="login-header">
-        <!-- Login icon -->
-        <div class="login-icon">
-          <svg width="56" height="57" viewBox="0 0 56 57" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M39.2 5.1665L33.1333 5.1665C25.6667 5.1665 21 9.83317 21 17.2998V26.7498H31.36L26.53 21.9198C26.18 21.5698 26.0167 21.1265 26.0167 20.6832C26.0167 20.2398 26.18 19.7965 26.53 19.4465C27.2067 18.7698 28.3267 18.7698 29.0033 19.4465L36.82 27.2632C37.4967 27.9398 37.4967 29.0598 36.82 29.7365L29.0033 37.5532C28.3267 38.2298 27.2067 38.2298 26.53 37.5532C25.8533 36.8765 25.8533 35.7565 26.53 35.0798L31.36 30.2498H21L21 39.6998C21 47.1665 25.6667 51.8332 33.1333 51.8332H39.1767C46.6433 51.8332 51.31 47.1665 51.31 39.6998L51.31 17.2998C51.3333 9.83317 46.6667 5.1665 39.2 5.1665Z" fill="#DEE8FF"/>
-            <path d="M6.41797 26.75C5.4613 26.75 4.66797 27.5433 4.66797 28.5C4.66797 29.4567 5.4613 30.25 6.41797 30.25L21.0013 30.25V26.75L6.41797 26.75Z" fill="#DEE8FF"/>
-          </svg>
-
-          <svg width="56" height="57" viewBox="0 0 56 57" fill="none" xmlns="http://www.w3.org/2000/svg" class="login-icon-primary">
-            <path d="M35.5599 52.4633H35.2565C24.8965 52.4633 19.9032 48.38 19.0399 39.2333C18.9465 38.2766 19.6465 37.4133 20.6265 37.32C21.5832 37.2266 22.4465 37.95 22.5399 38.9066C23.2165 46.2333 26.6699 48.9633 35.2799 48.9633H35.5832C45.0799 48.9633 48.4399 45.6033 48.4399 36.1066V20.8933C48.4399 11.3966 45.0799 8.03662 35.5832 8.03662H35.2799C26.6232 8.03662 23.1699 10.8133 22.5399 18.28C22.4232 19.2366 21.6299 19.96 20.6265 19.8666C19.6465 19.7966 18.9465 18.9333 19.0165 17.9766C19.8099 8.68995 24.8265 4.53662 35.2565 4.53662H35.5599C47.0165 4.53662 51.9165 9.43662 51.9165 20.8933L51.9165 36.1066C51.9165 47.5633 47.0165 52.4633 35.5599 52.4633Z" fill="#5C69F8"/>
-            <path d="M34.7213 30.25L4.66797 30.25C3.7113 30.25 2.91797 29.4567 2.91797 28.5C2.91797 27.5433 3.7113 26.75 4.66797 26.75L34.7213 26.75C35.678 26.75 36.4713 27.5433 36.4713 28.5C36.4713 29.4567 35.7013 30.25 34.7213 30.25Z" fill="#5C69F8"/>
-            <path d="M29.5176 38.0665C29.0743 38.0665 28.6309 37.9031 28.2809 37.5531C27.6043 36.8765 27.6043 35.7565 28.2809 35.0798L34.8609 28.4998L28.2809 21.9198C27.6043 21.2431 27.6043 20.1231 28.2809 19.4465C28.9576 18.7698 30.0776 18.7698 30.7543 19.4465L38.5709 27.2631C39.2476 27.9398 39.2476 29.0598 38.5709 29.7365L30.7543 37.5531C30.4043 37.9031 29.9609 38.0665 29.5176 38.0665Z" fill="#5C69F8"/>
-          </svg>
-        </div>
+        <div class="login-icon"></div>
         <h1 class="login-title">Log In</h1>
       </div>
 
-      <!-- Error message display -->
-      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-
-      <!-- Login form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <!-- Email field -->
+        <!-- Email -->
         <div class="form-group">
-          <label for="email">email</label>
+          <label for="email">Email</label>
           <div class="input-container">
             <input
               type="email"
@@ -47,15 +31,15 @@
               [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
             >
           </div>
-          <div class="validation-error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-            <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-            <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+          <div class="validation-error" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+            <span *ngIf="loginForm.get('email')?.errors?.['required']"> Email required </span>
+            <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter valid email </span>
           </div>
         </div>
 
-        <!-- Password field -->
+        <!-- Password -->
         <div class="form-group">
-          <label for="password">password</label>
+          <label for="password">Password</label>
           <div class="input-container">
             <input
               [type]="showPassword ? 'text' : 'password'"
@@ -65,29 +49,22 @@
               [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
             >
             <div class="eye-icon" (click)="togglePasswordVisibility()">
-              <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.0019 16.8299C9.61187 16.8299 7.67187 14.8899 7.67187 12.4999C7.67188 10.1099 9.61187 8.16992 12.0019 8.16992C14.3919 8.16992 16.3319 10.1099 16.3319 12.4999C16.3319 14.8899 14.3919 16.8299 12.0019 16.8299ZM12.0019 9.66992C10.4419 9.66992 9.17188 10.9399 9.17188 12.4999C9.17188 14.0599 10.4419 15.3299 12.0019 15.3299C13.5619 15.3299 14.8319 14.0599 14.8319 12.4999C14.8319 10.9399 13.5619 9.66992 12.0019 9.66992Z" fill="#9E9E9E"/>
-                <path d="M11.9981 21.52C8.23812 21.52 4.68813 19.32 2.24812 15.5C1.18813 13.85 1.18813 11.16 2.24812 9.49998C4.69812 5.67998 8.24813 3.47998 11.9981 3.47998C15.7481 3.47998 19.2981 5.67998 21.7381 9.49998C22.7981 11.15 22.7981 13.84 21.7381 15.5C19.2981 19.32 15.7481 21.52 11.9981 21.52ZM11.9981 4.97998C8.76813 4.97998 5.67813 6.91998 3.51813 10.31C2.76813 11.48 2.76813 13.52 3.51813 14.69C5.67813 18.08 8.76813 20.02 11.9981 20.02C15.2281 20.02 18.3181 18.08 20.4781 14.69C21.2281 13.52 21.2281 11.48 20.4781 10.31C18.3181 6.91998 15.2281 4.97998 11.9981 4.97998Z" fill="#9E9E9E"/>
-              </svg>
+
             </div>
           </div>
-          <div class="validation-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+          <div class="validation-error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password required  </span>
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be 8 charecters </span>
           </div>
         </div>
 
-        <!-- Forgot Password Link -->
-<!-- <a (click)="navigateToForgotPassword()" routerLink="forget-password" class="forgot-password">Forget Password?</a> -->
-<a routerLink="/forget-password" class="forgot-password">Forget Password?</a>
+        <a routerLink="/forget-password" class="forgot-password">Forget Password?</a>
 
-
-        <!-- Login Button -->
         <button type="submit" class="login-button" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Logging in...' : 'Login' }}
         </button>
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-        <!-- Registration Link -->
         <a routerLink="register" class="register-link">Don't have an account? Register</a>
       </form>
     </div>

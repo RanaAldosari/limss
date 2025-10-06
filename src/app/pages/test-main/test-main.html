@@ -1,0 +1,170 @@
+<!-- ===== TESTS PAGE ===== -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-head card">
+    <div class="left">
+      <img src="assets/Icons/glass.svg" alt="">
+      <p class="title">Tests</p>
+    </div>
+    <div class="right">
+      <button class="assign-btn"
+              [class.active]="selectedTestsCount > 0"
+              [disabled]="selectedTestsCount === 0"
+              (click)="openAssignModal()">
+        Assign Tests…
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar card">
+    <div class="search-wrap">
+      <img class="search-ic" src="assets/Icons/search-normal.svg" alt="">
+      <input
+        class="search"
+        [(ngModel)]="t_search"
+        placeholder="Search by test #, sample #, analysis, group…"
+        aria-label="Search"
+      />
+    </div>
+
+    <label class="rcv-only">
+      <input type="checkbox" [(ngModel)]="receivedOnly" />
+      Only received samples
+    </label>
+
+    <div class="count">Total: {{ testsFiltered().length }}</div>
+  </div>
+
+  <!-- Hint: came from Sample -->
+  <div *ngIf="route.snapshot.queryParamMap.get('sampleNumber') as sNo"
+       class="hint">
+    From Sample: <b class="mono">{{ sNo }}</b> — tests below were created for this sample.
+  </div>
+
+  <!-- Table -->
+  <div class="table card">
+    <div class="thead">
+      <div class="th chk">
+        <input
+          type="checkbox"
+          [checked]="allTestsSelectedVisible()"
+          (change)="toggleSelectAllTestsVisible($event)"
+          aria-label="Select all"
+        />
+      </div>
+      <div class="th">Test #</div>
+      <div class="th">Sample #</div>
+      <div class="th">Analysis</div>
+      <div class="th">Group</div>
+      <div class="th">Sample Status</div>
+      <div class="th">Status</div>
+      <div class="th">Operator</div>
+      <div class="th">Created</div>
+    </div>
+
+    <div class="row" *ngFor="let r of testsFiltered()">
+      <div class="td chk">
+        <input
+          type="checkbox"
+          [checked]="isTestSelected(r.id)"
+          (change)="toggleTest(r.id, $event)"
+          aria-label="Select row"
+        />
+      </div>
+      <div class="td mono">{{ r.testNumber }}</div>
+      <div class="td mono">{{ r.sampleNumber }}</div>
+      <div class="td">{{ r.analysis }}</div>
+      <div class="td">{{ r.group }}</div>
+      <div class="td">
+        {{ (r.sampleStatus==='Rcv' || r.sampleStatus==='RCV') ? 'Received' : (r.sampleStatus || '—') }}
+      </div>
+      <div class="td">
+        <span class="badge" [ngClass]="statusBadgeClass(r.status)" [title]="'Raw: ' + (r.status || '-')">
+          <span class="dot"></span>{{ prettyStatus(r.status) }}
+        </span>
+      </div>
+      <div class="td">{{ r.operator || '—' }}</div>
+      <div class="td">{{ r.createdAt | date:'MMM d, y, HH:mm' }}</div>
+    </div>
+
+    <div class="empty" *ngIf="!t_loading && !testsFiltered().length">No tests.</div>
+    <div class="empty" *ngIf="t_loading">Loading…</div>
+    <div class="empty err" *ngIf="t_error">{{ t_error }}</div>
+  </div>
+</div>
+
+<!-- ===== ASSIGN MODAL ===== -->
+<div class="modal-backdrop" *ngIf="showAssignModal" (click)="closeAssignModal()"></div>
+<div class="modal" *ngIf="showAssignModal" role="dialog" aria-modal="true">
+  <div class="modal-body">
+    <h2>Assign Tests</h2>
+
+    <div class="assign-grid">
+      <!-- Selected tests -->
+      <div class="sel-col">
+        <h4>Selected Tests ({{ selectedTestsCount }})</h4>
+        <ul class="sel-list">
+          <li *ngFor="let s of selectedTests">
+            <b class="mono">{{ s.testNumber }}</b>
+            <small class="mono">[{{ s.sampleNumber }}]</small>
+            <span class="tag">{{ s.analysis }}</span>
+            <span class="tag">{{ s.group }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Users -->
+      <div class="users-col">
+        <div class="users-head">
+          <h4>Users</h4>
+
+          <div *ngIf="groupOptions.length > 1" class="group-filter">
+            <label *ngFor="let g of groupOptions" class="chip"
+                   [class.primary]="visibleGroupId === g.id"
+                   (click)="onChangeVisibleGroup(g.id)">
+              {{ g.name }} <small class="mono">({{ g.count }})</small>
+            </label>
+          </div>
+
+          <input
+            class="user-search"
+            type="text"
+            placeholder="Search users…"
+            [(ngModel)]="userSearch"
+            (ngModelChange)="onUserSearchChange()"
+          />
+        </div>
+
+        <div *ngIf="usersLoading" class="empty">Loading users…</div>
+        <div *ngIf="usersError" class="empty err">{{ usersError }}</div>
+
+        <div class="users-list" *ngIf="!usersLoading && !usersError">
+          <label class="user-row" *ngFor="let u of users">
+            <input type="checkbox"
+                   [checked]="isUserPicked(u.id)"
+                   [disabled]="u.disabled"
+                   (change)="toggleUser(u.id, $event)" />
+            <div class="u-main">
+              <div class="u-name">{{ u.name }}</div>
+              <div class="u-meta">
+                <span class="mono">{{ u.email || '—' }}</span>
+                <span class="tag">{{ u.groupName }}</span>
+                <span *ngIf="u.isPrimary" class="chip">Primary</span>
+                <span *ngIf="u.disabled" class="chip danger">Disabled</span>
+              </div>
+            </div>
+          </label>
+
+          <div class="empty" *ngIf="!users.length">No users found.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" (click)="closeAssignModal()">Close</button>
+      <button class="primary" [disabled]="!pickedUserIds.size" (click)="confirmAssign()">OK</button>
+    </div>
+  </div>
+</div>

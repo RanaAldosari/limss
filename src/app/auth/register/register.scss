@@ -177,3 +177,22 @@ $shadow-color: rgba(136, 161, 227, 0.1);
     padding: 1.5rem;
   }
 }
+
+
+.input-container input.invalid,
+select.invalid {
+  border-color: #e53935;
+}
+
+.validation-error {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #e53935;
+}
+
+.error-message {
+  margin-top: 10px;
+  color: #e53935;
+  text-align: start;
+}

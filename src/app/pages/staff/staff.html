@@ -1,53 +1,141 @@
-<div class="header-bar">
-  <h3>Staff</h3>
-  <button class="add-btn" *ngIf="!showForm" (click)="onAdd()">Add User</button>
+<!-- HEADER -->
+<div class="header-shell">
+  <div class="header-bar">
+    <div class="crumbs">
+      <img src="assets/Icons/profile-2user (3).svg" alt="staff" />
+      <ng-container *ngIf="!showForm; else formCrumb">
+        <p class="crumb">Staff</p>
+      </ng-container>
+      <ng-template #formCrumb>
+        <span class="crumb">Staff</span>
+        <span class="sep">›</span>
+        <p class="crumb active">New User</p>
+      </ng-template>
+    </div>
+
+    <div class="header-actions" *ngIf="!showForm; else formActions">
+      <button class="btn primary" (click)="onAdd()">Add User</button>
+    </div>
+
+    <ng-template #formActions>
+      <div class="header-actions">
+        <button class="btn primary"
+                (click)="onSave()"
+                [disabled]="saving || formInvalid">
+          {{ saving ? 'Saving…' : 'Save' }}
+        </button>
+        <button class="btn ghost" type="button" (click)="onCancel()" [disabled]="saving">Cancel</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-filter" *ngIf="!showForm">
+    <div class="search-input">
+      <img src="assets/Icons/search-normal.svg" alt="Search" />
+      <input
+        type="text"
+        placeholder="Search"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()" />
+      <button class="clear" *ngIf="searchTerm" (click)="clearSearch()">×</button>
+    </div>
+  </div>
 </div>
-<!-- get data display -->
+
+<!-- TABLE -->
 <div *ngIf="!showForm" class="table-container">
-  <table>
+  <table class="staff-table">
+    <colgroup>
+      <col style="width: 20%" />
+      <col style="width: 23%" />
+      <col style="width: 15%" />
+      <col style="width: 18%" />
+      <col style="width: 10%" />
+      <col style="width: 14%" />
+    </colgroup>
     <thead>
       <tr>
         <th>Full Name</th>
         <th>Email Address</th>
         <th>Username</th>
+        <th>Group</th>
         <th>Status</th>
-        <th>Created At</th>
+        <th>Creation Date</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let user of staffList">
-        <td>{{ user.fullName }}</td>
-        <td>{{ user.email }}</td>
-        <td>@{{ user.userName }}</td>
-    <td>
-  <span [ngClass]="user.userDisabled ? 'inactive' : 'active'">
-    {{ user.userDisabled ? 'Inactive' : 'Active' }}
-  </span>
-</td>
-
-        <td>{{ user.createdAt | date:'short' }}</td>
+      <tr *ngFor="let u of filteredList">
+        <td>{{ u.fullName }}</td>
+        <td>{{ u.email }}</td>
+        <td>@{{ u.userName }}</td>
+        <td class="ellipsis">{{ u.groupNames?.join(', ') || '-' }}</td>
+        <td>
+          <span [ngClass]="u.userDisabled ? 'inactive' : 'active'">
+            {{ u.userDisabled ? 'Inactive' : 'Active' }}
+          </span>
+        </td>
+        <td>{{ u.createdAt | date:'d - MMMM - y' }}</td>
       </tr>
     </tbody>
   </table>
 </div>
-<!-- add users -->
+
+<!-- FORM -->
 <div *ngIf="showForm" class="form-card">
-  <h4 class="form-title">Add User Info</h4>
+  <div style="display:flex;align-items:center;gap:8px">
+    <img src="assets/Icons/profile.svg" alt="">
+    <p class="form-title">User Info</p>
+  </div>
 
-  <form (ngSubmit)="onSave()" #userForm="ngForm" class="form-body">
-    <input type="text" [(ngModel)]="formData.fullName" name="fullName" placeholder="Full Name" required />
-    <input type="email" [(ngModel)]="formData.email" name="email" placeholder="Email Address" required />
-    <input type="text" [(ngModel)]="formData.userName" name="userName" placeholder="Username" required />
-    <input type="password" [(ngModel)]="formData.password" name="password" placeholder="Password" required />
+  <form class="form-grid">
+    <div class="form-col">
+      <label>Full Name <span>*</span></label>
+      <input type="text" [(ngModel)]="formData.fullName" name="fullName" required />
 
-    <label>
-      <input type="checkbox" [(ngModel)]="formData.userDisabled" name="userDisabled" />
-      Disabled
-    </label>
+      <label>Email Address <span>*</span></label>
+      <input type="email" [(ngModel)]="formData.email" name="email" required />
 
-    <div class="form-actions">
-      <button type="submit" class="save-btn">Save</button>
-      <button type="button" class="cancel-btn" (click)="onCancel()">Cancel</button>
+      <label>Username <span>*</span></label>
+      <input type="text" [(ngModel)]="formData.userName" name="userName" required />
+
+      <label>Password <span>*</span></label>
+      <input type="password" [(ngModel)]="formData.password" name="password" required />
+    </div>
+
+    <div class="form-col">
+      <label>Role <span>*</span></label>
+      <div class="multiselect">
+        <div class="tag" *ngFor="let r of selectedRoles">
+          {{ r.name }}
+          <button type="button" class="x" (click)="removeRole(r._id)">×</button>
+        </div>
+        <select (change)="onAddRole($event)" [value]="''">
+          <option value="" disabled>Choose role…</option>
+          <option *ngFor="let r of roles" [value]="r._id">{{ r.name }}</option>
+        </select>
+      </div>
+
+      <label>Groups <span>*</span></label>
+      <div class="multiselect">
+        <div class="tag" *ngFor="let g of selectedGroups">
+          {{ g.name }}
+          <button type="button" class="x" (click)="removeGroup(g._id)">×</button>
+        </div>
+        <select (change)="onAddGroup($event)" [value]="''">
+          <option value="" disabled>Choose group…</option>
+          <option *ngFor="let g of groupsOptions" [value]="g._id">{{ g.name }}</option>
+        </select>
+      </div>
+
+      <div class="status-wrap">
+        <label>Status</label>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="formData.active" name="active" />
+          <span class="slider"></span>
+          <span class="switch-label">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+        </label>
+      </div>
     </div>
   </form>
 </div>

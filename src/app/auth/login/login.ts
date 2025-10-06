@@ -1,8 +1,10 @@
+// login.ts
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Auth } from '../../services/auth'; 
+import { Auth } from '../../services/auth';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -42,34 +44,44 @@ export class Login {
     this.cdr.detectChanges();
   }
 
- onSubmit(): void {
-  if (this.loginForm.invalid) {
-    this.markFormGroupTouched(this.loginForm);
-    return;
-  }
-
-  this.isSubmitting = true;
-  this.errorMessage = '';
-  this.cdr.detectChanges();
-
-  const data = this.loginForm.value; 
-
-  this.authService.login(data).subscribe({
-    next: (res) => {
-      // localStorage.setItem('token', res.token); 
-      localStorage.setItem('token', res.data.token);
-localStorage.setItem('user', JSON.stringify(res.data.user));
-      this.router.navigate(['/home']);  
-    },
-    error: (err) => {
-      console.error('Login error:', err);
-      this.errorMessage = 'Invalid email or password';
-      this.isSubmitting = false;
-      this.cdr.detectChanges();
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.markFormGroupTouched(this.loginForm);
+      return;
     }
-  });
-}
 
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.cdr.detectChanges();
+
+    const data = this.loginForm.value;
+
+    this.authService.login(data).subscribe({
+      next: (res) => {
+        localStorage.setItem('token', res?.data?.token);
+        localStorage.setItem('user', JSON.stringify(res?.data?.user || {}));
+
+        const u = res?.data?.user || {};
+        const displayName = u.fullName || u.userName || u.name || u.email || 'user';
+
+        Swal.fire({
+          title: `Welcome ${displayName}!`,
+          text: 'login successful',
+          icon: 'success',
+          timer: 1600,
+          showConfirmButton: false
+        }).then(() => {
+          this.router.navigate(['/home']);
+        });
+      },
+      error: (err) => {
+        console.error('Login error:', err);
+        this.errorMessage = err?.error?.message || 'invalid email or password';
+        this.isSubmitting = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   navigateToForgotPassword(): void {
     const email = this.loginForm.get('email')?.value;

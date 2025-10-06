@@ -1,0 +1,201 @@
+<!-- Header -->
+<div class="samples-header">
+  <div class="left" style="padding: 9px;">
+    <img src="assets/Icons/glass.svg" alt="">
+    <p style="color:#5C69F8;">Sample Details</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn print" (click)="onPrint()" style="color:#fff; background-color:#5C69F8;">
+      Print All Results
+    </button>
+
+    <button
+      class="btn receive"
+      (click)="openReceive()"
+      [disabled]="receiving || isReceived"
+      [title]="isReceived ? 'Already received' : ''">
+      Receive
+    </button>
+
+    <button class="btn auth" (click)="onAuthorize()">Authorize</button>
+    <button class="btn reject" (click)="onReject()">Reject</button>
+    <button class="btn cancel" (click)="onCancel()">Cancel</button>
+    <button class="btn restore" (click)="onRestore()">Restore</button>
+  </div>
+</div>
+
+<!-- ===== PAGE ===== -->
+<div class="sample-detail-page" *ngIf="sample">
+  <div class="grid">
+
+    <!-- Aside: Test list -->
+    <aside class="col-aside">
+      <ng-container *ngIf="tests?.length; else noTests">
+        <div class="test-card" *ngFor="let test of tests">
+          <div class="test-card__head">
+            <div class="head-left">
+              <img src="assets/Icons/clipboard-text.svg" alt="" />
+              <span style="font-weight: 400;">Test List</span>
+            </div>
+            <span class="status-pill" [ngClass]="statusClass(test.status)">
+              {{ test.status === 'Rcv' ? 'Received' : (test.status || 'Pending') }}
+            </span>
+          </div>
+
+          <div class="test-card__body">
+            <div class="kv">
+              <div class="k">Product</div>
+              <div class="v">{{ sample.productId?.name || '-' }}</div>
+
+              <div class="k">Product Grade</div>
+              <div class="v">{{ sample.gradeId?.name || '-' }}</div>
+
+              <div class="k">Test List</div>
+              <div class="v">{{ test.name || '-' }}</div>
+            </div>
+          </div>
+
+          <button class="btn-outline">View Result</button>
+        </div>
+      </ng-container>
+      <ng-template #noTests><div class="empty">No test list.</div></ng-template>
+    </aside>
+
+    <!-- Main cards -->
+    <main class="col-main">
+      <!-- Procedure Data -->
+      <section class="card">
+        <div class="card-title">
+          <div class="title-left">
+            <img src="assets/Icons/command.svg" alt="" />
+            <span style="font-weight: 400;">Procedure Data</span>
+          </div>
+          <div class="title-right">
+            <span class="k t">Type -</span>
+            <span class="v">{{ sample.type || '-' }}</span>
+          </div>
+        </div>
+        <div class="kv two">
+          <div class="k">Template Name</div>
+          <div class="v">{{ sample.sampleTemplateId?.name || '-' }}</div>
+          <div class="k hide-on-mobile">Type</div>
+          <div class="v hide-on-mobile">{{ sample.type || '-' }}</div>
+        </div>
+      </section>
+
+      <!-- Sample Info -->
+      <section class="card">
+        <div class="card-title">
+          <div class="title-left">
+            <img src="assets/Icons/clipboard-text.svg" alt="" />
+            <span style="font-weight: 400;">Sample Info</span>
+          </div>
+        </div>
+        <div class="kv two">
+          <div class="k">Group Name</div>
+          <div class="v">{{ sample.groupName || '-' }}</div>
+
+          <div class="k">Sample Plant</div>
+          <div class="v">{{ sample.plantId?.name || '-' }}</div>
+
+          <div class="k">Sample Site</div>
+          <div class="v">{{ sample.siteId?.name || '-' }}</div>
+
+          <div class="k">Sampling Point</div>
+          <div class="v">{{ sample.samplingPointId?.name || '-' }}</div>
+
+          <div class="k">Sample Stage</div>
+          <div class="v">{{ sample.stageId?.name || '-' }}</div>
+
+          <div class="k">Collector Name</div>
+          <div class="v">{{ sample.collectorName || '-' }}</div>
+
+          <div class="k">Sampling Date</div>
+          <div class="v">{{ sample.samplingDate | date:'MMM d, y' }}</div>
+
+          <div class="k">Received Date</div>
+          <div class="v">{{ sample.receivedDate | date:'MMM d, y' }}</div>
+
+          <div class="k">Priority</div>
+          <div class="v">{{ sample.priority || '-' }}</div>
+
+          <div class="k">Process Unit</div>
+          <div class="v">{{ sample.processUnitId?.name || '-' }}</div>
+        </div>
+      </section>
+
+      <!-- Storage Info -->
+      <section class="card">
+        <div class="card-title">
+          <div class="title-left">
+            <img src="assets/Icons/box.svg" alt="" />
+            <span style="font-weight: 400;">Storage Info</span>
+          </div>
+        </div>
+        <div class="kv two">
+          <div class="k">Building</div>
+          <div class="v">{{ sample.location?.buildingId?.name || '-' }}</div>
+
+          <div class="k">Room</div>
+          <div class="v">{{ sample.location?.roomId?.name || '-' }}</div>
+
+          <div class="k">Storage Unit</div>
+          <div class="v">{{ sample.location?.storageUnitId?.name || '-' }}</div>
+
+          <div class="k">Shelf</div>
+          <div class="v">{{ sample.location?.shelfId?.name || '-' }}</div>
+
+          <div class="k">Box / Drawer</div>
+          <div class="v">{{ sample.location?.boxId?.name || '-' }}</div>
+
+          <div class="k">Position</div>
+          <div class="v">{{ sample.location?.positionId?.name || '-' }}</div>
+        </div>
+      </section>
+
+      <!-- Test Info -->
+      <section class="card">
+        <div class="card-title">
+          <div class="title-left">
+            <img src="assets/Icons/glass.svg" alt="" />
+            <span style="font-weight: 400;">Test Info</span>
+          </div>
+        </div>
+        <div class="kv two">
+          <div class="k">Product</div>
+          <div class="v">{{ sample.productId?.name || '-' }}</div>
+
+          <div class="k">Product Grade</div>
+          <div class="v">{{ sample.gradeId?.name || '-' }}</div>
+
+          <div class="k">Test List</div>
+          <div class="v">{{ sample.testListId?.name || '-' }}</div>
+
+          <div class="k">Description</div>
+          <div class="v">{{ sample.sampleDescription || '-' }}</div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ===== RECEIVE MODAL ===== -->
+<div class="modal-backdrop" *ngIf="showReceiveModal" (click)="closeReceive()"></div>
+<div class="modal" *ngIf="showReceiveModal" role="dialog" aria-modal="true">
+  <div class="modal-body">
+    <h2>Receive Sample</h2>
+
+    <label>Comment (optional)</label>
+    <textarea rows="3"
+              [(ngModel)]="receiveComment"
+              placeholder="Add a note (optional)"></textarea>
+
+    <div class="modal-actions">
+      <button class="cancel" (click)="closeReceive()" [disabled]="receiving">Cancel</button>
+      <button class="primary" (click)="confirmReceive()" [disabled]="receiving">
+        {{ receiving ? 'Saving…' : 'Confirm Receive' }}
+      </button>
+    </div>
+  </div>
+</div>

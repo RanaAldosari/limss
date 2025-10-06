@@ -1,0 +1,153 @@
+<div class="page">
+  <!-- HEADER -->
+  <div class="header-shell">
+    <div class="header-bar">
+      <div class="crumbs">
+        <img src="assets/Icons/setting-3.png" alt="Settings" />
+        <p class="crumb">Configurations › List group</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions" *ngIf="!showForm(); else formActions">
+        <button class="btn primary" (click)="onAdd()" [disabled]="addingDisabled()">+ Add</button>
+      </div>
+      <ng-template #formActions>
+        <div class="header-actions">
+          <button class="btn primary" (click)="onSave()" [disabled]="formInvalid() || saving">
+            {{ saving ? 'Saving…' : 'Save' }}
+          </button>
+          <button class="btn ghost" type="button" (click)="onCancel()" [disabled]="saving">Cancel</button>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Tabs (hidden in form mode) -->
+    <div class="tabs" *ngIf="!showForm()">
+      <button [class.active]="activeTab() === 'lists'" (click)="setTab('lists')">List</button>
+      <button [class.active]="activeTab() === 'options'" (click)="setTab('options')">List Options</button>
+    </div>
+
+    <!-- Search bar (hidden in form mode) -->
+    <div class="search-filter" *ngIf="!showForm()">
+      <div class="search-input">
+        <img src="assets/Icons/search-normal.svg" alt="Search" />
+        <input type="text" placeholder="Search" [(ngModel)]="searchTerm" />
+        <button class="clear" *ngIf="searchTerm" (click)="searchTerm = ''">×</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LISTS TABLE ===== -->
+  <div *ngIf="!showForm() && activeTab() === 'lists'" class="card">
+    
+
+    <div class="table-wrap table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let l of filteredLists()"
+              [class.active]="selectedListId() === l._id"
+              (click)="onListRowClick(l._id)">
+            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.code }}</td>
+            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.name }}</td>
+            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.description || '-' }}</td>
+          </tr>
+          <tr *ngIf="!filteredLists()?.length">
+            <td class="empty" colspan="3">No lists</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== OPTIONS TABLE ===== -->
+  <div *ngIf="!showForm() && activeTab() === 'options'" class="card">
+    <div class="toolbar">
+      <div class="title">
+        <ng-container *ngIf="selectedListId(); else noListSel">
+          Options for: <b>{{ getListName(selectedListId()) }}</b>
+        </ng-container>
+        <ng-template #noListSel>
+          <span class="muted">Select a list from the “List” tab.</span>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="table-wrap table-container">
+      <table class="data-table">
+        <thead>
+          <tr><th>Code</th><th>Value</th><th>Label</th><th>Sort</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of optionsForSelectedList()">
+            <td>{{ o.code }}</td>
+            <td>{{ o.value }}</td>
+            <td>{{ o.label }}</td>
+            <td>{{ o.sortOrder || 0 }}</td>
+          </tr>
+          <tr *ngIf="!optionsForSelectedList()?.length">
+            <td class="empty" colspan="4">No options</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="showForm()" class="form-card">
+    <div class="form-head">
+      <img src="assets/Icons/warning-2.svg" alt="">
+      <p class="form-title">{{ activeTitle() }}</p>
+    </div>
+
+    <!-- Add List -->
+    <form class="form-grid" *ngIf="mode() === 'list'" (submit)="$event.preventDefault(); onSave()">
+      <div class="form-col">
+        <label>Group <span class="req">*</span></label>
+        <select class="input" [ngModel]="newListGroupId()" (ngModelChange)="setNewListGroup($event)">
+          <option *ngFor="let g of groupsFromLists()" [ngValue]="g._id">
+            {{ g.name }} <ng-container *ngIf="g.code">({{ g.code }})</ng-container>
+          </option>
+        </select>
+
+        <label>Name <span class="req">*</span></label>
+        <input class="input" type="text" [ngModel]="newList().name" (ngModelChange)="setNewListName($event)" />
+
+        <label>Code <span class="req">*</span></label>
+        <input class="input" type="text" [ngModel]="newList().code" (ngModelChange)="setNewListCode($event)" />
+      </div>
+      <div class="form-col">
+        <label>Description</label>
+        <textarea class="input" rows="6" [ngModel]="newList().description" (ngModelChange)="setNewListDesc($event)"></textarea>
+      </div>
+    </form>
+
+    <!-- Add Option -->
+    <form class="form-grid" *ngIf="mode() === 'option'" (submit)="$event.preventDefault(); onSave()">
+      <div class="form-col">
+        <label>List <span class="req">*</span></label>
+        <select class="input" [ngModel]="newOptionListId()" (ngModelChange)="setNewOptionList($event)">
+          <option *ngFor="let l of lists()" [ngValue]="l._id">{{ l.name }} ({{ l.code }})</option>
+        </select>
+
+        <label>Code <span class="req">*</span></label>
+        <input class="input" type="text" [ngModel]="newOption().code" (ngModelChange)="setNewOptCode($event)" />
+
+        <label>Value <span class="req">*</span></label>
+        <input class="input" type="text" [ngModel]="newOption().value" (ngModelChange)="setNewOptValue($event)" />
+
+        <label>Label <span class="req">*</span></label>
+        <input class="input" type="text" [ngModel]="newOption().label" (ngModelChange)="setNewOptLabel($event)" />
+      </div>
+      <div class="form-col">
+        <label>Sort Order</label>
+        <input class="input" type="number" [ngModel]="newOption().sortOrder" (ngModelChange)="setNewOptSort($event)" />
+      </div>
+    </form>
+  </div>
+</div>

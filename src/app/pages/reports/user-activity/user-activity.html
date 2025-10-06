@@ -1,0 +1,89 @@
+<p>user-activity works!</p>
+<div class="page">
+  <div class="crumbs">
+    Reports › <b>User Activity Report (UAR)</b>
+    <ng-container *ngIf="step==='results'"> › <span>Result</span></ng-container>
+  </div>
+
+
+
+<div>
+  <img src="assets/Images/SvgjsG1008.svg" alt="" srcset="">
+  <div>
+    <h3>To Generate The <b>User Activity Report (UAR)</b> </h3>
+    <h3>Fill in the required data </h3>
+  </div>
+  <div>
+    <label for="">Date Range</label>
+    <input type="date" [(ngModel)]="dateFrom"> to <input type="date" [(ngModel)]="dateTo">
+<label for="">User</label>
+    <select [(ngModel)]="userType">
+      <option value="All">All</option>
+      <option value="Manager">Manager</option>
+      <option value="Analyst">Analyst</option>
+      <option value="Sampler">Sampler</option>
+    </select>
+  </div>
+  <button>View Recodrs</button>
+</div>
+
+
+
+  <!-- Step 1: Filters -->
+  <div *ngIf="step==='filters'" class="filter-card">
+    <!-- <div class="illus"></div> -->
+    <div class="form">
+      <div class="row">
+        <label>Date From
+          <input type="date" [(ngModel)]="dateFrom">
+        </label>
+        <label>Date To
+          <input type="date" [(ngModel)]="dateTo">
+        </label>
+        <label>User Type
+          <select [(ngModel)]="userType">
+            <option>All</option>
+            <option>Manager</option>
+            <option>Analyst</option>
+            <option>Sampler</option>
+          </select>
+        </label>
+      </div>
+      <button class="btn primary" (click)="viewResults()">View Results</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Results -->
+  <div *ngIf="step==='results'" class="card">
+    <div class="toolbar">
+      <button class="btn ghost" (click)="back()">Back</button>
+      <button class="btn primary" (click)="exportCSV()">Export</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>User Name</th>
+            <th>User Type</th>
+            <th>Description</th>
+            <th>IP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of visible">
+            <td>{{ r.ts }}</td>
+            <td>{{ r.userName }}</td>
+            <td>{{ r.userType }}</td>
+            <td>{{ r.description }}</td>
+            <td>{{ r.ip }}</td>
+          </tr>
+          <tr *ngIf="!visible.length">
+            <td class="empty" colspan="5">No data</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

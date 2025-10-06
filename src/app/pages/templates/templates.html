@@ -1,50 +1,49 @@
-<div class="templates-container">
+<div class="page templates-page">
+  <!-- Header -->
+  <div class="header-bar card">
+    <div class="crumbs">
+      <img src="assets/Icons/setting-3.png" alt="icon" />
+      <p class="crumb">Configurations › <b>Templates</b></p>
+    </div>
 
-  <!-- Breadcrumb -->
-  <div class="breadcrumb">
-    <span>Configurations</span>
-    <span class="divider">›</span>
-    <span class="current">Templates</span>
+    <div class="actions">
+      <button class="btn primary" [routerLink]="['/home/new-template']">Add Template</button>
+    </div>
   </div>
 
-<div class="header">
- <div class="search-filter">
-  <img src="assets/Icons/search-normal.svg" alt="Search">
-  <input 
-    type="text" 
-    placeholder="Search" 
-    [(ngModel)]="searchTerm"
-    (input)="onSearch()"
-  >
-</div>
-
-
-  <button class="add-btn" [routerLink]="['/home/new-template']">
-    Add Template
-  </button>
-</div>
-
+  <!-- Search BELOW header -->
+  <div class="filters-row">
+    <div class="search">
+      <img src="assets/Icons/search-normal.svg" alt="Search" />
+      <input
+        type="text"
+        placeholder="Search"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+      />
+    </div>
+  </div>
 
   <!-- Table -->
-  <div class="table">
-    <div class="table-header">
-      <div>Template Name</div>
-      <div><img src="assets/Icons/arrow-swap.svg" alt="" srcset=""> Template Code</div>
-      <div><img src="assets/Icons/arrow-swap.svg" alt="" srcset=""> Template Status <img src="assets/Icons/arrow-swap.svg" alt="" srcset=""></div>
-    </div>
+  <div class="card table-card">
+    <div class="table">
+      <div class="thead">
+        <div class="th"><b style="font-weight: 700;">Template Name</b></div>
+        <div class="th"><b style="font-weight: 700;">Template Code</b></div>
+        <div class="th"><b style="font-weight: 700;">Template Status</b></div>
+      </div>
 
-<div class="table-body">
-  <div class="row" *ngFor="let t of filteredTemplates">
-    <div>{{ t.name }}</div>
-    <div>{{ t.code }}</div>
-    <div>
-      <span [ngClass]="t.status === 'Active' ? 'status-active' : 'status-inactive'">
-        {{ t.status }}
-      </span>
+      <div class="tbody">
+        <button class="tr" *ngFor="let t of filteredTemplates">
+          <div class="td name">{{ t.name }}</div>
+          <div class="td code">{{ t.code }}</div>
+          <div class="td status">
+            <span class="pill" [class.pill--green]="t.status === 'Active'" [class.pill--red]="t.status !== 'Active'">
+              {{ t.status }}
+            </span>
+          </div>
+        </button>
+      </div>
     </div>
   </div>
 </div>
-
-  </div>
-</div>
-

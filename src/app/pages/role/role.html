@@ -1,0 +1,107 @@
+<div class="roles-page">
+
+<div class="page-header" *ngIf="!showAddForm && !showEditForm">
+  <div class="title">
+    <img src="assets/Icons/setting-3.png" alt="settings">
+    <span class="crumbs">
+      <a class="crumb-link">Configurations</a> <span class="sep">›</span>
+      <span class="here">Roles</span>
+    </span>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" (click)="openAdd()">Add Role</button>
+    <button class="btn btn-primary" [routerLink]="['/home','role-access']">Settings</button>
+  </div>
+</div>
+
+
+  <!-- Roles table -->
+  <div class="table" *ngIf="!showAddForm && !showEditForm">
+    <div class="thead">
+      <div class="th col-name">ROLE NAME</div>
+      <div class="th col-active">ACTIVE</div>
+      <div class="th col-actions">ACTIONS</div>
+      <div class="th col-date">CREATION DATE</div>
+    </div>
+
+    <div class="tbody" *ngIf="!loading; else loadingTpl">
+      <div class="tr" *ngFor="let r of roles">
+        <div class="td col-name">
+          <button class="linklike role-name" (click)="openDetails(r)">{{ r.name }}</button>
+          <div class="role-desc" *ngIf="r.description">{{ r.description }}</div>
+        </div>
+
+        <div class="td col-active">
+          <span class="badge" [class.badge--active]="r.active" [class.badge--inactive]="!r.active">
+            {{ r.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <div class="td col-actions">
+          <button class="link"   (click)="toggleActive(r)">Toggle</button>
+          <button class="ghost"  (click)="openEdit(r)">Edit</button>
+          <button class="danger" (click)="delete(r)">Delete</button>
+        </div>
+
+        <div class="td col-date">{{ fmtDate(r.createdAt) }}</div>
+      </div>
+
+      <div class="empty" *ngIf="roles.length === 0">No roles yet.</div>
+    </div>
+  </div>
+
+  <!-- ADD -->
+  <div class="add-card" *ngIf="showAddForm">
+    <div class="add-header">
+      <div class="path">Configurations › Roles › <b>New Role</b></div>
+      <div class="actions">
+        <button class="ghost" (click)="cancelAdd()">Cancel</button>
+        <button class="primary" [disabled]="saving" (click)="saveNewRole()">
+          {{ saving ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="add-body">
+      <div class="form-row">
+        <label>Role Name <span class="req">*</span></label>
+        <input type="text" [(ngModel)]="newRole.name" placeholder="Technician" />
+      </div>
+
+      <div class="form-row">
+        <label>Description</label>
+        <textarea rows="3" [(ngModel)]="newRole.description" placeholder="What this role is for"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT -->
+  <div class="add-card" *ngIf="showEditForm">
+    <div class="add-header">
+      <div class="path">Configurations › Roles › <b>Edit Role</b></div>
+      <div class="actions">
+        <button class="ghost" (click)="cancelEdit()">Cancel</button>
+        <button class="primary" [disabled]="saving" (click)="saveEditRole()">
+          {{ saving ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="add-body">
+      <div class="form-row">
+        <label>Role Name <span class="req">*</span></label>
+        <input type="text" [(ngModel)]="editForm.name" placeholder="Technician" />
+      </div>
+
+      <div class="form-row">
+        <label>Description</label>
+        <textarea rows="3" [(ngModel)]="editForm.description" placeholder="What this role is for"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading">Loading roles…</div>
+  </ng-template>
+</div>

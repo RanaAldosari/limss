@@ -1,70 +1,544 @@
-<div class="header-bar">
-  <div class="tabs">
-    <button [class.active]="activeTab === 'product-grade'" (click)="setActiveTab('product-grade')">Product Grade</button>
-    <button [class.active]="activeTab === 'analysis-type'" (click)="setActiveTab('analysis-type')">Analysis Type</button>
-    <button [class.active]="activeTab === 'analysis-group'" (click)="setActiveTab('analysis-group')">Analysis Group</button>
-    <button [class.active]="activeTab === 'analysis'" (click)="setActiveTab('analysis')">Analysis</button>
-    <button [class.active]="activeTab === 'test'" (click)="setActiveTab('test')">Test</button>
+<!-- ========== HEADER ========== -->
+<div class="page-header">
+  <div class="title">
+    <img src="assets/Icons/setting-3.png" alt="">
+    <p class="trail">Configurations › Tests > </p>
+    <p>{{ headerLabel }}</p>
   </div>
 
-  <button class="add-role-btn" (click)="onAddRole()">+ Add Role</button>
+  <div class="actions" *ngIf="!showForm; else formHeaderActions">
+    <button class="primary" (click)="onAddRole()">Add {{ currentTitle }}</button>
+  </div>
+
+  <ng-template #formHeaderActions>
+    <div class="actions">
+      <button class="primary" (click)="onSave()" [disabled]="saving">
+        {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+      <button class="ghost" type="button" (click)="onCancel()" [disabled]="saving">Cancel</button>
+    </div>
+  </ng-template>
 </div>
-<!-- tabel -->
-<div *ngIf="!showForm">
-  <table>
+
+<!-- ========== TABS ========== -->
+<div class="tabs-wrap" *ngIf="!showForm">
+  <div class="tabs">
+    <button [class.active]="activeTab==='product'"        (click)="setActiveTab('product')">Product</button>
+    <button [class.active]="activeTab==='product-grade'"  (click)="setActiveTab('product-grade')">Product Grade</button>
+    <button [class.active]="activeTab==='product-stage'"  (click)="setActiveTab('product-stage')">Product Stage</button>
+    <button [class.active]="activeTab==='product-spec'"   (click)="setActiveTab('product-spec')">Product Spec</button>
+    <button [class.active]="activeTab==='units'"          (click)="setActiveTab('units')">Units</button>
+    <button [class.active]="activeTab==='test-list'"      (click)="setActiveTab('test-list')">Test List</button>
+    <button [class.active]="activeTab==='components'"     (click)="setActiveTab('components')">Components</button>
+    <button [class.active]="activeTab==='analysis'"       (click)="setActiveTab('analysis')">Analysis</button>
+  </div>
+</div>
+
+<div class="search" *ngIf="!showForm">
+  <img class="search-ico" src="assets/Icons/search-normal.svg" alt="" />
+  <input type="text" placeholder="Search" [(ngModel)]="searchTerm" />
+  <button class="clear" *ngIf="searchTerm" (click)="searchTerm=''">×</button>
+</div>
+
+<!-- ========== TABLE ========== -->
+<div *ngIf="!showForm" class="card table-card">
+  <table class="data-table">
     <thead>
       <tr>
         <th *ngFor="let col of displayedColumns">{{ col | titlecase }}</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of tableData">
-        <td *ngFor="let col of displayedColumns">{{ row[col] }}</td>
+      <tr *ngFor="let row of filteredRows">
+        <td *ngFor="let col of displayedColumns">
+          <ng-container [ngSwitch]="col">
+            <span *ngSwitchCase="'active'" [class.ok]="row[col]" [class.bad]="!row[col]">
+              {{ row[col] ? 'Active' : 'Inactive' }}
+            </span>
+            <span *ngSwitchDefault>{{ row[col] }}</span>
+          </ng-container>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
-<!-- form -->
-<div *ngIf="showForm" class="form-container">
-  <h3>{{ activeTab | titlecase }} Info</h3>
 
-  <div *ngIf="activeTab === 'product-grade'">
-    <input placeholder="Code" [(ngModel)]="formData.code">
-    <input placeholder="Name" [(ngModel)]="formData.name">
-    <!-- <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea> -->
+<!-- ========== FORM ========== -->
+<form *ngIf="showForm" #f="ngForm" (ngSubmit)="onSave()" novalidate class="card form-card">
+
+  <div class="form-head">
+    <img src="assets/Icons/warning-2.svg" alt="" />
+    <p class="section-title">{{ currentTitle }} Info</p>
   </div>
 
-  <div *ngIf="activeTab === 'analysis-type'">
-    <input placeholder="Code" [(ngModel)]="formData.code">
-    <input placeholder="Name" [(ngModel)]="formData.name">
-    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  <!-- ===== Product ===== -->
+  <div *ngIf="activeTab==='product'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="p_code" [(ngModel)]="formData.code" required />
+      <small *ngIf="f.submitted && !formData.code" class="err">Required</small>
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="p_name" [(ngModel)]="formData.name" required />
+      <small *ngIf="f.submitted && !formData.name" class="err">Required</small>
+    </div>
+
+    <div class="field">
+      <label>Category <span class="req" style="color:#ef4444">*</span></label>
+      <input name="p_cat" [(ngModel)]="formData.category" required />
+      <small *ngIf="f.submitted && !formData.category" class="err">Required</small>
+    </div>
+
+    <div class="field">
+      <label>Group <span class="req" style="color:#ef4444">*</span></label>
+      <select name="p_group" [(ngModel)]="formData.groupId" required>
+        <option [ngValue]="undefined">Choose group…</option>
+        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+      <small *ngIf="f.submitted && !formData.groupId" class="err">Required</small>
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="p_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active">
+        <span></span>
+      </button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
   </div>
 
-  <div *ngIf="activeTab === 'analysis-group'">
-    <input placeholder="Code" [(ngModel)]="formData.code">
-    <input placeholder="Name" [(ngModel)]="formData.name">
-    <input placeholder="Product Grade Name" [(ngModel)]="formData.productGradeName">
-    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  <!-- ===== Product Grade ===== -->
+  <div *ngIf="activeTab==='product-grade'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="g_code" [(ngModel)]="formData.code" required />
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="g_name" [(ngModel)]="formData.name" required />
+    </div>
+
+    <div class="field">
+      <label>Product <span class="req" style="color:#ef4444">*</span></label>
+      <select name="g_prod" [(ngModel)]="formData.productId" required>
+        <option [ngValue]="undefined">Choose product…</option>
+        <option *ngFor="let p of products" [ngValue]="p._id">{{ p.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sampling Point <span class="req" style="color:#ef4444">*</span></label>
+      <select name="g_sp" [(ngModel)]="formData.samplingPointId" required>
+        <option [ngValue]="undefined">Choose sampling point…</option>
+        <option *ngFor="let sp of samplingPoints" [ngValue]="sp._id">{{ sp.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sort Order</label>
+      <input type="number" name="g_so" [(ngModel)]="formData.sortOrder"/>
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="g_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
   </div>
 
-  <div *ngIf="activeTab === 'analysis'">
-    <input placeholder="Code" [(ngModel)]="formData.code">
-    <input placeholder="Name" [(ngModel)]="formData.name">
-    <input placeholder="Analysis Group Name" [(ngModel)]="formData.analysisGroupName">
-    <input placeholder="Analysis Type Name" [(ngModel)]="formData.analysisTypeName">
-    <textarea placeholder="Description" [(ngModel)]="formData.description"></textarea>
+  <!-- ===== Product Stage ===== -->
+  <div *ngIf="activeTab==='product-stage'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="s_code" [(ngModel)]="formData.code" required />
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="s_name" [(ngModel)]="formData.name" required />
+    </div>
+
+    <div class="field">
+      <label>Product <span class="req" style="color:#ef4444">*</span></label>
+      <select name="s_prod" [(ngModel)]="formData.productId" required>
+        <option [ngValue]="undefined">Choose product…</option>
+        <option *ngFor="let p of products" [ngValue]="p._id">{{ p.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Grade <span class="req" style="color:#ef4444">*</span></label>
+      <select name="s_grade" [(ngModel)]="formData.gradeId" required>
+        <option [ngValue]="undefined">Choose grade…</option>
+        <option *ngFor="let g of grades" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sampling Point <span class="req" style="color:#ef4444">*</span></label>
+      <select name="s_sp" [(ngModel)]="formData.samplingPointId" required>
+        <option [ngValue]="undefined">Choose sampling point…</option>
+        <option *ngFor="let sp of samplingPoints" [ngValue]="sp._id">{{ sp.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Spec Type <span class="req" style="color:#ef4444">*</span></label>
+      <select name="s_specType" [(ngModel)]="formData.spec_type" required>
+        <option *ngFor="let t of specTypes" [value]="t">{{ t }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label># Replications</label>
+      <input type="number" name="s_rep" [(ngModel)]="formData.numberOfReplications"/>
+    </div>
+
+    <div class="field">
+      <label>Method</label>
+      <input name="s_method" [(ngModel)]="formData.method"/>
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="s_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
   </div>
 
-  <div *ngIf="activeTab === 'test'">
-    <input placeholder="Code" [(ngModel)]="formData.code">
-    <input placeholder="Name" [(ngModel)]="formData.name">
-    <input placeholder="Analysis Name" [(ngModel)]="formData.analysisName">
-    <input placeholder="Unit" [(ngModel)]="formData.unit">
-    <input placeholder="Target Value" [(ngModel)]="formData.targetValue">
+  <!-- ===== Product Spec ===== -->
+  <div *ngIf="activeTab==='product-spec'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="ps_code" [(ngModel)]="formData.code" required />
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="ps_name" [(ngModel)]="formData.name" required />
+    </div>
+
+    <div class="field">
+      <label>Product</label>
+      <select name="ps_prod" [(ngModel)]="formData.productId">
+        <option [ngValue]="undefined">-- Select Product --</option>
+        <option *ngFor="let p of products" [ngValue]="p._id">{{ p.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Grade</label>
+      <select name="ps_grade" [(ngModel)]="formData.gradeId">
+        <option [ngValue]="undefined">-- Select Grade --</option>
+        <option *ngFor="let g of grades" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Stage</label>
+      <select name="ps_stage" [(ngModel)]="formData.stageId">
+        <option [ngValue]="undefined">-- Select Stage --</option>
+        <option *ngFor="let s of stages" [ngValue]="s._id">{{ s.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sampling Point <span class="req" style="color:#ef4444">*</span></label>
+      <select name="ps_sp" [(ngModel)]="formData.samplingPointId" required>
+        <option [ngValue]="undefined">-- Select Sampling Point --</option>
+        <option *ngFor="let sp of samplingPoints" [ngValue]="sp._id">{{ sp.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Analysis <span class="req" style="color:#ef4444">*</span></label>
+      <select name="ps_an" [(ngModel)]="formData.analysisId" required>
+        <option [ngValue]="undefined">-- Select Analysis --</option>
+        <option *ngFor="let a of analyses" [ngValue]="a._id">{{ a.name || a.code }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Component <span class="req" style="color:#ef4444">*</span></label>
+      <select name="ps_comp" [(ngModel)]="formData.componentId" required>
+        <option [ngValue]="undefined">-- Select Component --</option>
+        <option *ngFor="let c of components" [ngValue]="c._id">{{ c.name || c.code }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Units <span class="req" style="color:#ef4444">*</span></label>
+      <input name="ps_units" [(ngModel)]="formData.units" required />
+    </div>
+
+    <div class="field">
+      <label>Rule Type <span class="req" style="color:#ef4444">*</span></label>
+      <select name="ps_rule" [(ngModel)]="formData.ruleType" required>
+        <option *ngFor="let r of ruleTypes" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Round</label>
+      <input name="ps_round" [(ngModel)]="formData.round" />
+    </div>
+
+    <div class="field">
+      <label>Places</label>
+      <input type="number" name="ps_places" [(ngModel)]="formData.places" />
+    </div>
+
+    <div class="field">
+      <label>Sort Order</label>
+      <input type="number" name="ps_sort" [(ngModel)]="formData.sortOrder" />
+    </div>
+
+    <div class="field">
+      <label>Spec Rule</label>
+      <input name="ps_specrule" [(ngModel)]="formData.specRule" />
+    </div>
+
+    <div class="field">
+      <label>Spec Type <span class="req" style="color:#ef4444">*</span></label>
+      <select name="ps_spectype" [(ngModel)]="formData.specType" required>
+        <option *ngFor="let t of specTypes" [value]="t">{{ t }}</option>
+      </select>
+    </div>
+
+    <div class="field check">
+      <label>Required</label>
+      <input type="checkbox" name="ps_req" [(ngModel)]="formData.required" />
+    </div>
+
+    <div class="field">
+      <label># Replications</label>
+      <input type="number" name="ps_reps" [(ngModel)]="formData.numberOfReplications" />
+    </div>
+
+    <div class="field">
+      <label>Result Conversion</label>
+      <select name="ps_rc" [(ngModel)]="formData.resultConversion">
+        <option value="NONE">NONE</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Min Value</label>
+      <input type="number" name="ps_min" [(ngModel)]="formData.minValue" />
+    </div>
+
+    <div class="field">
+      <label>Max Value</label>
+      <input type="number" name="ps_max" [(ngModel)]="formData.maxValue" />
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="ps_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
   </div>
 
-  <div class="form-actions">
-    <button (click)="onSave()">Save</button>
-    <button (click)="onCancel()">Cancel</button>
+  <!-- ===== Units ===== -->
+  <div *ngIf="activeTab==='units'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="u_code" [(ngModel)]="formData.code" required />
+    </div>
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="u_name" [(ngModel)]="formData.name" required />
+    </div>
+    <div class="field">
+      <label>Base <span class="req" style="color:#ef4444">*</span></label>
+      <input name="u_base" [(ngModel)]="formData.base" required />
+    </div>
+    <div class="field">
+      <label>Category <span class="req" style="color:#ef4444">*</span></label>
+      <input name="u_cat" [(ngModel)]="formData.category" required />
+    </div>
+
+    <div class="field">
+      <label>Group <span class="req" style="color:#ef4444">*</span></label>
+      <select name="u_group" [(ngModel)]="formData.groupId" required>
+        <option [ngValue]="undefined">Choose group…</option>
+        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>Display String</label>
+      <input name="u_ds" [(ngModel)]="formData.displayString" />
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
   </div>
-</div>
+
+  <!-- ===== Test List ===== -->
+  <div *ngIf="activeTab==='test-list'" class="grid2">
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="tl_name" [(ngModel)]="formData.name" required />
+    </div>
+    <div class="field">
+      <label>Group <span class="req" style="color:#ef4444">*</span></label>
+      <select name="tl_group" [(ngModel)]="formData.groupId" required>
+        <option [ngValue]="undefined">Choose group…</option>
+        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="tl_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
+  </div>
+
+  <!-- ===== Components ===== -->
+  <div *ngIf="activeTab==='components'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="c_code" [(ngModel)]="formData.code" required />
+    </div>
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="c_name" [(ngModel)]="formData.name" required />
+    </div>
+
+    <div class="field">
+      <label>Analysis <span class="req" style="color:#ef4444">*</span></label>
+      <select name="c_an" [(ngModel)]="formData.analysisId" required>
+        <option [ngValue]="undefined">Choose analysis…</option>
+        <option *ngFor="let a of analyses" [ngValue]="a._id">{{ a.name || a.code }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Result Type <span class="req" style="color:#ef4444">*</span></label>
+      <select name="c_rt" [(ngModel)]="formData.resultType" required>
+        <option value="N">N</option>
+        <option value="T">T</option>
+        <option value="L">L</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>List (if L)</label>
+      <select name="c_list" [(ngModel)]="formData.listId">
+        <option [ngValue]="undefined">-- No List --</option>
+        <option *ngFor="let l of lists" [ngValue]="l._id">{{ l.name || l.code }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sort Order</label>
+      <input type="number" name="c_so" [(ngModel)]="formData.sortOrder" />
+    </div>
+    <div class="field">
+      <label>Reported Name</label>
+      <input name="c_rn" [(ngModel)]="formData.reportedName" />
+    </div>
+    <div class="field">
+      <label>Version</label>
+      <input type="number" name="c_ver" [(ngModel)]="formData.version" />
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
+  </div>
+
+  <!-- ===== Analysis ===== -->
+  <div *ngIf="activeTab==='analysis'" class="grid2">
+    <div class="field">
+      <label>Code <span class="req" style="color:#ef4444">*</span></label>
+      <input name="a_code" [(ngModel)]="formData.code" required />
+    </div>
+    <div class="field">
+      <label>Name <span class="req" style="color:#ef4444">*</span></label>
+      <input name="a_name" [(ngModel)]="formData.name" required />
+    </div>
+    <div class="field">
+      <label>Type (Chemistry) <span class="req" style="color:#ef4444">*</span></label>
+      <input name="a_type" [(ngModel)]="formData.type" required />
+    </div>
+    <div class="field">
+      <label>Version <span class="req" style="color:#ef4444">*</span></label>
+      <input type="number" name="a_ver" [(ngModel)]="formData.version" required />
+    </div>
+
+    <div class="field">
+      <label>Analysis Type <span class="req" style="color:#ef4444">*</span></label>
+      <select name="a_at" [(ngModel)]="formData.AnalysisType" required>
+        <option value="CHIMICAL">CHIMICAL</option>
+        <option value="PHYSICAL">PHYSICAL</option>
+        <option value="BIOMATERIAL">BIOMATERIAL</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Group <span class="req" style="color:#ef4444">*</span></label>
+      <select name="a_group" [(ngModel)]="formData.groupId" required>
+        <option [ngValue]="undefined">Choose group…</option>
+        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Reported Name</label>
+      <input name="a_rn" [(ngModel)]="formData.reportedName" />
+    </div>
+    <div class="field">
+      <label>Alias Name</label>
+      <input name="a_alias" [(ngModel)]="formData.aliasName" />
+    </div>
+
+    <div class="field full">
+      <label>Description</label>
+      <textarea name="a_desc" [(ngModel)]="formData.description"></textarea>
+    </div>
+
+    <div class="toggle full">
+      <span>Status</span>
+      <button type="button" class="toggle-btn" [class.on]="formData.active" (click)="formData.active=!formData.active"><span></span></button>
+      <span class="toggle-text">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
+  </div>
+
+  <div class="form-actions"></div>
+</form>

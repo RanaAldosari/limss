@@ -1,0 +1,159 @@
+<!-- ===== Header (Breadcrumb + Actions) ===== -->
+<div class="header-bar">
+  <div class="crumbs">
+    <img src="assets/Icons/glass.svg" alt="">
+    <span class="crumb">Samples</span>
+    <span class="sep">›</span>
+    <b class="crumb active">New Sample</b>
+  </div>
+
+  <div class="actions">
+    <button class="btn ghost" *ngIf="step > 1" (click)="step = step - 1" aria-label="Back">Back</button>
+
+    <button class="btn primary" *ngIf="step < 3"
+            [disabled]="(step===1 && (!formData?.template || loadingTemplate)) || (step===2 && !canGoNextFromRequired())"
+            (click)="step = step + 1" aria-label="Next">
+      Next ➜
+    </button>
+
+    <button class="btn primary" *ngIf="step === 3"
+            [disabled]="saving || !isValidRequired()"
+            (click)="saveSample()" aria-label="Save Sample">
+      {{ saving ? ' Saving…' : ' Save' }}
+    </button>
+  </div>
+</div>
+
+<div class="stepper">
+  <div class="step-dot" [class.active]="step===1" [class.done]="step>1">
+    <span class="icon" style="--icon: url('assets/Icons/warning-2.svg')"></span>
+    <div class="label">Template</div>
+  </div>
+
+  <div class="line"></div>
+
+  <div class="step-dot" [class.active]="step===2" [class.done]="step>2">
+    <span class="icon" style="--icon: url('assets/Icons/glass.svg')"></span>
+    <div class="label">Test</div>
+  </div>
+
+  <div class="line"></div>
+
+  <div class="step-dot" [class.active]="step===3">
+    <span class="icon" style="--icon: url('assets/Icons/box.svg')"></span>
+    <div class="label">Location</div>
+  </div>
+</div>
+
+<!-- ===== Page Body ===== -->
+<div class="log-sample-container">
+  <!-- STEP 1 -->
+  <div *ngIf="step === 1" class="cards">
+    <div class="card">
+      <div class="card-title">
+        <img class="emoji" src="assets/Icons/command (1).svg" alt="">
+        <span style="font-weight: 400; color: #5C69F8;">Procedure Data</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Template Name <span class="req">*</span></label>
+          <select [(ngModel)]="formData.template" (ngModelChange)="onTemplateChange()">
+            <option [ngValue]="null">-- Select Template --</option>
+            <option *ngFor="let t of templates" [ngValue]="t">{{ t.name }}</option>
+          </select>
+          <small class="hint" *ngIf="loadingTemplate">⏳ Loading template settings…</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div *ngIf="step === 2" class="cards">
+    <div class="card">
+      <div class="card-title">
+        <img class="emoji" src="assets/Icons/glass.svg" alt="">
+        <span style="font-weight: 400; color: #5C69F8;">Test Info</span>
+      </div>
+
+      <div class="grid-3">
+        <ng-container *ngFor="let key of requiredFields">
+          <div class="field">
+            <label>{{ labels[key] || key }} <span class="req">*</span></label>
+
+            <!-- Dropdowns -->
+            <select *ngIf="isLookup(key)" [(ngModel)]="formData[getModelFor(key)]">
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let item of getLookupArray(key)" [ngValue]="item">{{ item.name }}</option>
+            </select>
+
+            <!-- Date/Time -->
+            <div class="input-affix" *ngIf="key==='samplingDate' || key==='receivedDate'">
+              <input type="datetime-local" [(ngModel)]="formData[getModelFor(key)]" />
+            </div>
+
+            <!-- Text -->
+            <input *ngIf="!isLookup(key) && key!=='samplingDate' && key!=='receivedDate'"
+                   type="text" [(ngModel)]="formData[getModelFor(key)]"
+                   placeholder="Enter {{ labels[key] || key }}" />
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div *ngIf="step === 3" class="cards">
+    <div class="card">
+      <div class="card-title">
+        <img class="emoji" src="assets/Icons/drop (1).svg" alt="">
+        <span style="font-weight: 400; color: #5C69F8;">Sample Info</span>
+      </div>
+
+      <div class="grid-3">
+        <ng-container *ngFor="let key of optionalFields">
+          <ng-container *ngIf="!locationKeys.includes(key)">
+            <div class="field">
+              <label>{{ labels[key] || key }}</label>
+
+              <select *ngIf="isLookup(key)" [(ngModel)]="formData[getModelFor(key)]">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let item of getLookupArray(key)" [ngValue]="item">{{ item.name }}</option>
+              </select>
+
+              <div class="input-affix" *ngIf="key==='samplingDate' || key==='receivedDate'">
+                <input type="datetime-local" [(ngModel)]="formData[getModelFor(key)]" />
+              </div>
+
+              <input *ngIf="!isLookup(key) && key!=='samplingDate' && key!=='receivedDate'"
+                     type="text" [(ngModel)]="formData[getModelFor(key)]"
+                     placeholder="Enter {{ labels[key] || key }}" />
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Storage Location (Optional) -->
+    <div class="card" *ngIf="anyLocationVisible">
+      <div class="card-title">
+        <img class="emoji" src="assets/Icons/box.svg" alt="">
+        <span style="font-weight: 400; color: #5C69F8;">Storage Location</span>
+      </div>
+
+      <div class="grid-3">
+        <ng-container *ngFor="let key of locationKeys">
+          <ng-container *ngIf="show(key) && !req(key)">
+            <div class="field">
+              <label>{{ labels[key] || key }}</label>
+              <select [(ngModel)]="formData[getModelFor(key)]">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let item of getLookupArray(key)" [ngValue]="item">{{ item.name }}</option>
+              </select>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

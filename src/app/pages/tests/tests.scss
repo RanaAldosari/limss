@@ -1,161 +1,106 @@
-.tabs {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  gap: 10px;
+/* ====== Header ====== */
+.page-header{
+  display:flex; justify-content:space-between; align-items:center;
+  background:#fff; border-radius:14px; padding:10px 14px; margin-bottom:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+.page-header .title{display:flex; align-items:center; gap:8px; color:#5C69F8;}
+.page-header .title img{width: 25px;}
+.page-header .title .trail{opacity:.8}
+.page-header .actions{display:flex; align-items:center; gap:10px}
+.page-header .actions .primary,
+.page-header .actions .ghost{
+  padding:8px 16px; border-radius:10px; border:0; font-weight:700; cursor:pointer;
+}
+.page-header .actions .primary{background:#5C69F8; color:#fff}
+.page-header .actions .ghost{background:#f3f4f6; color:#111}
 
-  button {
-    background: transparent;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    color: #666;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
+/* search pill*ngIf */
+.search{
+  position:relative; display:flex; align-items:center; gap:8px; width:25%; margin-bottom: 10px;
+  background:#fff; border:1px solid #e5e7eb; border-radius:25px; padding:6px 12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.03);
+}
+.search-ico{width:16px; height:16px; opacity:.75}
+.search input{border:0; outline:none; width:100px; font-size:13px; background:transparent}
+.search .clear{border:0; background:transparent; font-size:16px; line-height:1; cursor:pointer; opacity:.5}
 
-    &.active {
-      color: #5C69F8;
-      font-weight: 500;
-      border-bottom: 2px solid #5C69F8;
-    }
+/* ====== Tabs ====== */
+.tabs-wrap{margin-bottom:12px}
+.tabs{display:flex; justify-content:center; gap:22px}
+.tabs button{
+  background:transparent; border:0; cursor:pointer; color:#6b7280; font-weight:700;
+  padding:8px 2px; border-bottom:2px solid transparent; transition:.15s;
+}
+.tabs button.active{color:#5C69F8; border-color:#5C69F8}
 
-    &:hover {
-      color: #5C69F8;
-    }
-  }
+/* ====== Cards ====== */
+.card{background:#fff; border-radius:16px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.table-card{padding:0}
+
+/* ====== Table ====== */
+.data-table{width:100%; table-layout:fixed; border-collapse:collapse}
+.data-table th,.data-table td{
+  padding:12px 14px; border-bottom:1px solid #f2f3f7; font-size:14px; text-align:left; white-space:nowrap
+}
+.data-table th{color:#6b7280; font-weight:800; background:transparent; border-bottom:2px solid #eef2f7}
+.ok{color:#10b981; font-weight:700}
+.bad{color:#ef4444; font-weight:700}
+
+/* ====== Form ====== */
+.form-card{padding:16px}
+.form-head{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.form-head img{width:18px; height:18px}
+.section-title{margin:0; color:#5C69F8; font-size:16px}
+
+/* grid: two columns like Location */
+.grid2{
+  display:grid; grid-template-columns:1fr 1fr; column-gap:24px; row-gap:12px;
+}
+.full{grid-column:1 / -1}
+
+label{display:flex; flex-direction:row; gap:6px; font-size:12px; color:#6b7280}
+input, select, textarea{
+  width:98%; padding:10px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; font-size:14px
+}
+textarea{min-height:96px}
+.err{color:#ef4444; font-weight:700}
+
+/* Toggle */
+.toggle{display:flex; align-items:center; gap:10px}
+.toggle-btn{
+  width:50px; height:28px; background:#e5e7eb; border-radius:999px; border:0; position:relative; cursor:pointer
+}
+.toggle-btn span{
+  position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .2s
+}
+.toggle-btn.on{background:#5C69F8}
+.toggle-btn.on span{transform:translateX(22px)}
+.toggle-text{font-size:13px; color:#374151}
+
+/* form footer */
+.form-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:10px}
+.form-actions .primary{background:#5C69F8; color:#fff; border:0; border-radius:10px; padding:8px 16px; font-weight:700}
+.form-actions button{cursor:pointer}
+
+/* ====== Required Star ====== */
+label:has(> input[required]),
+label:has(> select[required]),
+label:has(> textarea[required]) {
+  position: relative;
+}
+label:has(> input[required])::after,
+label:has(> select[required])::after,
+label:has(> textarea[required])::after {
+  content: " *";
+  color: #ef4444; 
+  font-weight: 700;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
-
-  thead {
-    background: #f9f9fb;
-    tr {
-      th {
-        padding: 14px;
-        font-size: 13px;
-        font-weight: 500;
-        color: #999;
-        text-align: left;
-      }
-    }
-  }
-
-  tbody {
-    tr {
-      border-bottom: 1px solid #f0f0f5;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: #f9f9fb;
-      }
-
-      td {
-        padding: 12px 14px;
-        font-size: 14px;
-        color: #333;
-      }
-    }
-  }
-}
-
-
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.tabs {
-  display: flex;
-  gap: 10px;
-
-  button {
-    background: transparent;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    color: #666;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-
-    &.active {
-      color: #3f51b5;
-      font-weight: 500;
-      border-bottom: 2px solid #3f51b5;
-    }
-
-    &:hover {
-      color: #3f51b5;
-    }
-  }
-}
-
-.add-role-btn {
-  background: #3f51b5;
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: #334296;
-  }
-}
-
-
-.form-container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
-  margin-top: 15px;
-
-  h3 {
-    color: #3f51b5;
-    margin-bottom: 15px;
-  }
-
-  input, textarea {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
-
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-
-    button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:first-child {
-      background: #3f51b5;
-      color: #fff;
-    }
-
-    button:last-child {
-      background: #eee;
-    }
-  }
+/* ====== Responsive ====== */
+@media (max-width: 920px){
+  .grid2{grid-template-columns:1fr}
+  .search{width:100%}
+  .search input{width:140px}
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -10,10 +11,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./sidebar.scss']
 })
 export class Sidebar {
-    configOpen = false;  
-userName: string = '';
+  configOpen = false;
+  reportsOpen = false;
+  userName: string = '';
 
-constructor(private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     const user = localStorage.getItem('user');
@@ -25,10 +27,9 @@ constructor(private router: Router) {}
 
   logout() {
     localStorage.clear();
-    this.router.navigate(['/']); 
+    this.router.navigate(['/']);
   }
 
-  toggleConfig() {
-    this.configOpen = !this.configOpen;
-  }
+  toggleConfig() { this.configOpen = !this.configOpen; }
+  toggleReports() { this.reportsOpen = !this.reportsOpen; }
 }

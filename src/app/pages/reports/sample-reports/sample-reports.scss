@@ -1,0 +1,36 @@
+@use "sass:math";
+@import '../user-activity/user-activity.scss';
+
+.badge{padding:4px 8px;border-radius:10px;font-size:12px;font-weight:600}
+.badge-pending{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.badge-progress{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+.badge-done{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
+.badge-cancel{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+
+$primary:#4756DF; $muted:#6b7280; $border:#e5e7eb; $bg:#f7f9fc; $text:#111827;
+
+.page{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:$text;}
+.crumbs{color:$muted;margin-bottom:10px;}
+
+.filter-card{
+  background:#fff;border:1px solid $border;border-radius:14px;padding:24px;
+  display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:center;
+  .illus{height:220px;background:#f4f6ff;border-radius:12px;}
+  .form{display:grid;gap:12px;}
+  .row{display:grid;grid-template-columns: repeat(3,1fr); gap:12px;}
+  label{display:grid;gap:6px;color:$muted;font-size:12px;}
+  input,select{height:36px;border:1px solid $border;border-radius:10px;padding:8px 10px;}
+  .btn{justify-self:flex-start;}
+}
+
+.card{background:#fff;border:1px solid $border;border-radius:12px;padding:12px;}
+.toolbar{display:flex;justify-content:space-between;margin-bottom:10px;}
+.btn{border:1px solid $border;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+.btn.primary{background:$primary;border-color:$primary;color:#fff;font-weight:600}
+.btn.ghost{background:#fff}
+.table-wrap{overflow:auto}
+.data-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid $border;border-radius:10px;overflow:hidden}
+.data-table thead th{background:#fbfbfd;color:$muted;text-align:left;padding:10px 12px;border-bottom:1px solid $border}
+.data-table tbody td{padding:12px;border-bottom:1px solid $border}
+.data-table tbody tr:last-child td{border-bottom:0}
+.empty{text-align:center;color:$muted;padding:14px 0}

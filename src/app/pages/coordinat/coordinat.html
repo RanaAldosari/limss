@@ -1,0 +1,138 @@
+<!-- Top bar (breadcrumb + Save/Cancel أو Add <Section>) -->
+<div class="topbar">
+  <div class="path">
+    <img src="assets/Icons/setting-3.png" alt="icon" />
+    <span>Configurations</span>
+    <span class="sep">›</span>
+    <p>Coordinate</p>
+    <span class="sep">›</span>
+    <span class="current">{{ headerSectionLabel }}</span>
+  </div>
+
+  <div class="right">
+    <ng-container *ngIf="showForm; else addBtn">
+      <button class="btn-primary" [disabled]="saving" (click)="onSave()">
+        {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+      <button class="btn-ghost" (click)="onCancel()">Cancel</button>
+    </ng-container>
+    <ng-template #addBtn>
+      <button class="btn-primary" (click)="onAdd()">Add {{ currentTitle }}</button>
+    </ng-template>
+  </div>
+</div>
+<div class="tabs-underline" *ngIf="!showForm">
+  <button [class.active]="activeTab==='site'"           (click)="setActiveTab('site')">Site</button>
+  <button [class.active]="activeTab==='plant'"          (click)="setActiveTab('plant')">Plant</button>
+  <button [class.active]="activeTab==='unit'"           (click)="setActiveTab('unit')">Processing Unit</button>
+  <button [class.active]="activeTab==='sampling-point'" (click)="setActiveTab('sampling-point')">Sampling Point</button>
+</div>
+
+<div class="search-filter" *ngIf="!showForm">
+  <div class="search-input">
+    <img src="assets/Icons/search-normal.svg" alt="Search" />
+    <input type="text" placeholder="Search" [(ngModel)]="searchTerm" />
+  </div>
+</div>
+
+<!-- TABLE -->
+<div *ngIf="!showForm" class="card table-card">
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let col of displayedColumns">{{ col | titlecase }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filteredData()">
+        <td *ngFor="let col of displayedColumns">
+          <ng-container [ngSwitch]="col">
+            <span *ngSwitchCase="'active'" [class.state-active]="row[col]" [class.state-inactive]="!row[col]">
+              {{ row[col] ? 'Active' : 'Inactive' }}
+            </span>
+            <span *ngSwitchDefault>{{ row[col] || '—' }}</span>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="empty" *ngIf="!filteredData().length">No data.</div>
+</div>
+
+<!-- FORM -->
+<div *ngIf="showForm" class="card form-card">
+   <div class="form-head">
+    <img class="form-head-icon" src="assets/Icons/warning-2.svg" alt="section icon" />
+    <p class="form-head-title">{{ currentTitle }}</p>
+  </div>
+  <div class="form-grid">
+    <!-- Site -->
+    <ng-container *ngIf="activeTab==='site'">
+      <div class="field">
+        <label class="req">Code</label>
+        <input placeholder="Code" [(ngModel)]="formData.code" [disabled]="editMode"/>
+      </div>
+      <div class="field">
+        <label class="req">Name</label>
+        <input placeholder="Name" [(ngModel)]="formData.name"/>
+      </div>
+    </ng-container>
+
+    <!-- Plant -->
+    <ng-container *ngIf="activeTab==='plant'">
+      <div class="field">
+        <label class="req">Site</label>
+        <select [(ngModel)]="formData.siteId">
+          <option [ngValue]="undefined">Choose site…</option>
+          <option *ngFor="let s of sites" [ngValue]="s._id">{{ s.name }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="req">Name</label>
+        <input placeholder="Name" [(ngModel)]="formData.name"/>
+      </div>
+    </ng-container>
+
+    <!-- Processing Unit -->
+    <ng-container *ngIf="activeTab==='unit'">
+      <div class="field">
+        <label class="req">Plant</label>
+        <select [(ngModel)]="formData.plantId">
+          <option [ngValue]="undefined">Choose plant…</option>
+          <option *ngFor="let p of plants" [ngValue]="p._id">{{ p.name }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="req">Name</label>
+        <input placeholder="Name" [(ngModel)]="formData.name"/>
+      </div>
+    </ng-container>
+
+    <!-- Sampling Point -->
+    <ng-container *ngIf="activeTab==='sampling-point'">
+      <div class="field">
+        <label class="req">Processing Unit</label>
+        <select [(ngModel)]="formData.processUnitId">
+          <option [ngValue]="undefined">Choose processing unit…</option>
+          <option *ngFor="let u of units" [ngValue]="u._id">
+            {{ u.name }} ({{ u.plantId?.name || u.plant?.name || '—' }})
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="req">Name</label>
+        <input placeholder="Name" [(ngModel)]="formData.name"/>
+      </div>
+    </ng-container>
+
+    <!-- Status -->
+    <div class="field full">
+      <label>Status</label>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="formData.active"/>
+        <span></span>
+      </label>
+      <span class="status-hint">{{ formData.active ? 'Active' : 'Inactive' }}</span>
+    </div>
+  </div>
+</div>

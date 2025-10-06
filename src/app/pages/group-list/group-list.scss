@@ -1,0 +1,67 @@
+/* Palette */
+$primary: #5C69F8;
+$text: #111827;
+$muted: #6b7280;
+$border: #e5e7eb;
+
+/* Page */
+.page { font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif; color: $text; padding: 8px 0 16px; }
+
+/* Header like Location */
+.header-shell { background: transparent; margin-bottom: 10px; }
+.header-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #fff; border-radius: 14px; padding: 18px 12px; 
+  box-shadow: 0 8px 24px rgba(0,0,0,.04);
+}
+.crumbs { display: flex; align-items: center; gap: 8px;
+  img { width: 22px; height: 22px; }
+  .crumb { color: $primary; font-size: 14px; margin: 0; }
+}
+.header-actions { display: flex; gap: 8px; }
+.btn { padding: 7px 14px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; }
+.btn.primary { background: $primary; color: #fff; }
+.btn.ghost { background: #f3f4f6; color: #333; }
+
+/* Tabs (hidden in form mode from HTML) */
+.tabs { margin-top: 12px; display: flex; justify-content: center; gap: 20px; padding: 8px 0;
+  button { background: transparent; border: 0; cursor: pointer; color: #6b7280; font-weight: 600;
+    padding: 6px 2px; border-bottom: 2px solid transparent; }
+  button.active { color: $primary; border-color: $primary; }
+}
+
+/* Search */
+.search-filter { margin: 8px 0 6px; display: flex; justify-content: flex-start; }
+.search-input {
+  position: relative; display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid $border; border-radius: 25px; padding: 15px 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.03);
+  img { width: 16px; height: 16px; opacity: .75; }
+  input { border: 0; outline: none; font-size: 13px; width: 260px; background: transparent; }
+  .clear { border: 0; background: transparent; font-size: 16px; line-height: 1; cursor: pointer; opacity: .5; }
+}
+
+/* Card & table */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; .spacer{flex:1} .muted{color:$muted} }
+.table-wrap { overflow: auto; }
+.table-container { border-radius: 16px; overflow: hidden; }
+.data-table {
+  width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid $border; border-radius: 12px; overflow: hidden;
+  thead th { text-align: left; font-weight: 700; color: $muted; background: #fbfbfd; padding: 10px 12px; border-bottom: 2px solid #eef2f7; }
+  tbody td { padding: 12px; background: #fff; border-bottom: 1px solid #f2f3f7; font-size: 13px; color: $text; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr { cursor: pointer; }
+  tbody tr.active td {}
+  .empty { text-align: center; color: $muted; padding: 14px 0; }
+}
+
+.form-card { background: #fff; border-radius: 16px; padding: 18px; border: 1px solid $border; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.form-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  img { width: 20px; height: 20px; }
+  .form-title { color: $primary; font-size: 16px; font-weight: 700; margin: 0; }
+}
+.form-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 14px 32px; align-items: start; }
+.form-col { display: grid; gap: 10px; }
+label { font-size: 12px; color: $muted; }
+.req { color: #ef4444; }
+.input, select, textarea { width: 98%; padding: 9px 10px; border-radius: 10px; border: 1px solid $border; font-size: 13px; background: #fff; outline: none; }

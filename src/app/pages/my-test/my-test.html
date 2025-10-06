@@ -1,0 +1,54 @@
+<div class="page">
+  <h2 class="title">My Assigned Tests</h2>
+
+  <div *ngIf="loading" class="empty">Loading…</div>
+  <div *ngIf="error" class="empty err">{{ error }}</div>
+
+  <div *ngIf="!loading">
+    <div class="table card" *ngIf="tests.length; else noData">
+      <div class="thead">
+        <div class="th">#</div>
+        <div class="th">Test / List</div>
+        <div class="th">Sample ID</div>
+        <div class="th">Group ID</div>
+        <div class="th">Replicates</div>
+        <div class="th">Status</div>
+        <div class="th">Created</div>
+        <div class="th">Updated</div>
+      </div>
+
+      <div
+        class="row clickable"
+        *ngFor="let t of tests; let i = index"
+        (click)="openDetails(t)"
+        [title]="t._source==='api' ? 'Open details' : 'Pending sync…'"
+        style="cursor:pointer"
+      >
+        <div class="td">{{ i + 1 }}</div>
+
+        <div class="td mono">
+          <ng-container *ngIf="t._source === 'api'; else fromList">
+            {{ t.testNumber || '-' }}
+          </ng-container>
+          <ng-template #fromList>
+            {{ t.nameFromList || 'Test List' }}
+            <small *ngIf="t.codeFromList">[{{ t.codeFromList }}]</small>
+          </ng-template>
+        </div>
+
+        <div class="td mono">{{ t.sampleId || '—' }}</div>
+        <div class="td mono">{{ t.groupId || '—' }}</div>
+        <div class="td">{{ t.replicateCount ?? '—' }}</div>
+        <div class="td">
+          <span class="badge">{{ mapStatus(t.status) }}</span>
+        </div>
+        <div class="td">{{ t.createdAt | date:'MMM d, y, HH:mm' }}</div>
+        <div class="td">{{ t.updatedAt | date:'MMM d, y, HH:mm' }}</div>
+      </div>
+    </div>
+
+    <ng-template #noData>
+      <div class="empty">No tests assigned.</div>
+    </ng-template>
+  </div>
+</div>
