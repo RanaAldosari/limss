@@ -1,13 +1,20 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 
 type Id = string;
 
+interface Group {
+  _id: Id;
+  name: string;
+  code?: string;
+  description?: string;
+}
+
 interface ListItem {
   _id: Id;
-  groupId: Id | { _id: Id; name: string; code?: string; description?: string };
+  groupId: Id | Group;
   name: string;
   code: string;
   description?: string;
@@ -25,11 +32,22 @@ interface ListOption {
   active?: boolean;
 }
 
-/** API */
+/** APIs */
 const API_BASE = 'http://localhost:3004/api/v1';
-const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token') || ''}` });
+const IDENTITY_BASE = 'http://localhost:3001/api/v1';
 
-/** "test value" -> "TEST_VALUE" */
+function buildHeaders(): { headers: HttpHeaders } {
+  const token = localStorage.getItem('token') || '';
+  const tenant = localStorage.getItem('tenantKey') || 'ibnouf_lab_7_testing';
+  return {
+    headers: new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'X-Tenant-Code': tenant,
+      'Content-Type': 'application/json',
+    }),
+  };
+}
+
 function normalizeCode(v: string | undefined | null): string {
   const s = (v ?? '')
     .trim()
@@ -49,30 +67,29 @@ function normalizeCode(v: string | undefined | null): string {
 })
 export class GroupList {
   constructor(private http: HttpClient) {
+    this.fetchGroups();  
     this.fetchLists();
     this.fetchOptions();
   }
 
-  /** ===== Tabs ===== */
   activeTab = signal<'lists' | 'options'>('lists');
   setTab(tab: 'lists' | 'options') { this.activeTab.set(tab); }
 
   mode = signal<'list' | 'option' | null>(null);
   showForm = computed(() => this.mode() !== null);
   activeTitle = computed(() =>
-    this.mode() === 'list'   ? 'Add List'
+    this.mode() === 'list'     ? 'Add List'
     : this.mode() === 'option' ? 'Add List Option'
     : 'Value Lists'
   );
 
-  /** Header actions */
   saving = false;
   onAdd() {
     if (this.activeTab() === 'lists') this.openAddList();
     else this.openAddOption();
   }
   onCancel() {
-    this.mode.set(null);  
+    this.mode.set(null);
     this.newList.set({ name: '', code: '', description: '', active: true });
     this.newListGroupId.set(null);
     this.newOption.set({ code: '', value: '', label: '', sortOrder: 1, active: true });
@@ -87,7 +104,8 @@ export class GroupList {
   addingDisabled = computed(() => this.activeTab() === 'options' && !this.lists().length);
 
   /** ===== State ===== */
-  lists = signal<ListItem[]>([]);
+  groups = signal<Group[]>([]);
+  lists  = signal<ListItem[]>([]);
   options = signal<ListOption[]>([]);
   selectedListId = signal<Id | null>(null);
 
@@ -95,17 +113,6 @@ export class GroupList {
   searchTerm: string = '';
 
   /** ===== Derived ===== */
-  groupsFromLists = computed(() => {
-    const map = new Map<Id, { _id: Id; name: string; code?: string }>();
-    for (const l of this.lists()) {
-      const g = typeof l.groupId === 'string'
-        ? { _id: l.groupId, name: l.groupId, code: undefined }
-        : (l.groupId as { _id: Id; name: string; code?: string } | null);
-      if (g && !map.has(g._id)) map.set(g._id, { _id: g._id, name: g.name, code: g.code });
-    }
-    return Array.from(map.values());
-  });
-
   filteredLists = computed(() => {
     const q = this.searchTerm.trim().toLowerCase();
     if (!q) return this.lists();
@@ -149,8 +156,26 @@ export class GroupList {
   });
 
   /** ===== API ===== */
+  fetchGroups() {
+    this.http.get<{ data: Group[] }>(`${IDENTITY_BASE}/groups`, buildHeaders())
+      .subscribe({
+        next: (res) => {
+          const arr = Array.isArray(res?.data) ? res.data : [];
+          this.groups.set(arr.map(g => ({ _id: String(g._id), name: g.name, code: g.code, description: g.description })));
+          if (!this.newListGroupId()) {
+            const first = this.groups()[0]?._id || null;
+            this.newListGroupId.set(first);
+          }
+        },
+        error: (e) => {
+          console.error('GET /groups failed', e);
+          this.groups.set([]);
+        }
+      });
+  }
+
   fetchLists() {
-    this.http.get<{ data: ListItem[] }>(`${API_BASE}/lists`, { headers: authHeaders() })
+    this.http.get<{ data: ListItem[] }>(`${API_BASE}/lists`, buildHeaders())
       .subscribe({
         next: (res) => {
           const data = res?.data || [];
@@ -162,31 +187,25 @@ export class GroupList {
   }
 
   fetchOptions() {
-    this.http.get<{ data: ListOption[] }>(`${API_BASE}/list-entries`, { headers: authHeaders() })
+    this.http.get<{ data: ListOption[] }>(`${API_BASE}/list-entries`, buildHeaders())
       .subscribe({
         next: (res) => this.options.set(res?.data || []),
         error: () => alert('Error(List Options).'),
       });
   }
 
-  /** ===== Table interactions ===== */
   onListRowClick(id: Id) {
     this.selectedListId.set(id);
     this.setTab('options');
   }
 
-  /** ====== Add List (Page form) ====== */
   newList = signal<Partial<ListItem>>({ name: '', code: '', description: '', active: true });
   newListGroupId = signal<Id | null>(null);
 
   openAddList() {
-    const current = this.selectedListId();
-    const currentList = this.lists().find(l => l._id === current);
-    const gid = currentList
-      ? (typeof currentList.groupId === 'string' ? currentList.groupId : currentList.groupId?._id)
-      : (this.groupsFromLists()[0]?._id || null);
-    this.newListGroupId.set(gid ?? null);
-    this.mode.set('list');                 // << يظهر فورم الصفحة ويختفي الجدول
+    const gid = this.newListGroupId() || this.groups()[0]?._id || null;
+    this.newListGroupId.set(gid);
+    this.mode.set('list');
   }
 
   setNewListName(v: string) { this.newList.update(x => ({ ...x, name: v })); }
@@ -204,7 +223,7 @@ export class GroupList {
       description: (f.description || '').trim(),
       active: f.active ?? true,
     };
-    this.http.post<{ data: ListItem }>(`${API_BASE}/lists`, payload, { headers: authHeaders() })
+    this.http.post<{ data: ListItem }>(`${API_BASE}/lists`, payload, buildHeaders())
       .subscribe({
         next: (res) => {
           const created = res?.data;
@@ -219,14 +238,13 @@ export class GroupList {
       });
   }
 
-  /** ====== Add Option (Page form) ====== */
   newOption = signal<Partial<ListOption>>({ code: '', value: '', label: '', sortOrder: 1, active: true });
   newOptionListId = signal<Id | null>(null);
 
   openAddOption() {
     const lid = this.selectedListId() || this.lists()[0]?._id || null;
     this.newOptionListId.set(lid);
-    this.mode.set('option');            
+    this.mode.set('option');
   }
   setNewOptCode(v: string)  { this.newOption.update(x => ({ ...x, code: normalizeCode(v) })); }
   setNewOptValue(v: string) { this.newOption.update(x => ({ ...x, value: normalizeCode(v) })); }
@@ -248,7 +266,7 @@ export class GroupList {
       sortOrder: Number(f.sortOrder ?? 1),
       active: f.active ?? true,
     };
-    this.http.post<{ data: ListOption }>(`${API_BASE}/list-entries`, payload, { headers: authHeaders() })
+    this.http.post<{ data: ListOption }>(`${API_BASE}/list-entries`, payload, buildHeaders())
       .subscribe({
         next: (res) => {
           const created = res?.data;

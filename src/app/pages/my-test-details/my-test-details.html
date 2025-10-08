@@ -1,0 +1,136 @@
+<div class="page">
+  <!-- Header -->
+  <div class="header-bar" style="padding: 20px; width: 100%; display: flex; justify-content: space-between;">
+     <div style="display: flex; width: 500px; align-items: center;">
+       <img src="assets/Icons/glass.svg" alt="">
+      <p class="header-title" style="color: #5c69f8; font-size: 17px; font-weight: 400;">Test Details</p>
+     </div>
+<ng-container *ngIf="!loading() && !error() && test() as t">
+      <button style="width: 100px; padding: 10px 10px;"
+        class="btn primary"
+        *ngIf="isIncomplete(t)"
+        (click)="startTest()"
+[disabled]="starting()"
+>
+        {{ starting() ? 'Starting…' : 'Start Test' }}
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- States -->
+  <div *ngIf="loading()" class="empty">Loading…</div>
+  <div *ngIf="!loading() && error()" class="empty err">{{ error() }}</div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!loading() && !error() && test() as t">
+    <div class="grid">
+      <div class="col-left">
+
+        <!-- Test Info -->
+        <div class="card">
+          <div class="card-head">
+            <img src="assets/Icons/glass.svg" class="head-icon" alt="icon" />
+            <span style="color: #5c69f8; font-weight: 500;">Test Info</span>
+          </div>
+          <div class="rows">
+            <div><b>Test Number:</b> <span class="mono">{{ t.testNumber || '—' }}</span></div>
+            <div><b>Sample ID:</b> <span class="mono">{{ t.sampleId || '—' }}</span></div>
+            <div><b>Group ID:</b> <span class="mono">{{ t.groupId || '—' }}</span></div>
+            <div><b>Analysis ID/Name:</b> <span class="mono">{{ t.analysisId || t.analysis || '—' }}</span></div>
+            <div><b>Replicates:</b> {{ t.replicateCount ?? '—' }}</div>
+            <div><b>Status:</b> <span class="badge">{{ mapStatus(t.status) }}</span></div>
+          </div>
+        </div>
+
+        <!-- Meta -->
+        <div class="card">
+          <div class="card-head">
+           <img src="assets/Icons/element-1 (1).svg" class="head-icon" alt="icon" />
+           <span style="color: #5c69f8; font-weight: 500;">Assign Info</span>
+         </div>
+          <div class="rows">
+            <div><b>Assigned Operator:</b> <span class="mono">{{ t.assignedOperator || '—' }}</span></div>
+            <div><b>Created:</b> {{ t.createdAt | date:'MMM d, y, HH:mm' }}</div>
+            <div><b>Updated:</b> {{ t.updatedAt | date:'MMM d, y, HH:mm' }}</div>
+            <div><b>Source:</b> API</div>
+          </div>
+        </div>
+<div class="card result-info">
+  <div class="card-head">
+    <img src="assets/Icons/clipboard-text.svg" class="head-icon" alt="icon" />
+    <span style="color:#5c69f8;font-weight:500;">Result Info</span>
+  </div>
+
+  <div *ngIf="isIncomplete(t)" class="empty">Start the test to enter results.</div>
+
+  <div *ngIf="isInProgress(t)">
+    <div *ngIf="entryRows.length === 0" class="empty err">
+      No components found for this analysis.
+    </div>
+
+    <ng-container *ngIf="entryRows.length > 0">
+      <div class="ri-meta">
+        <div class="chip"><b>Test:</b> <span class="mono">{{ t._id || t.testId }}</span></div>
+        <div class="chip"><b>Sample:</b> <span class="mono">{{ t.sampleId }}</span></div>
+        <div class="chip"><b>Analysis:</b> <span class="mono">{{ t.analysisId || t.analysis }}</span></div>
+        <div class="chip">
+          <b>Replicate:</b>
+          <select [(ngModel)]="replicateIndex" class="chip-select">
+            <option *ngFor="let _ of [].constructor(t.replicateCount || 1); let i = index" [value]="i+1">
+              {{ i + 1 }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+    <div class="ri-table">
+  <div class="ri-head">
+    <div>Component</div>
+    <div>Result</div>
+    <div>Unit</div>
+    <div>Comment</div>
+  </div>
+
+  <div *ngFor="let row of entryRows" class="ri-row">
+    <div class="c1">{{ row.componentName }}</div>
+
+    <div class="c2">
+      <input *ngIf="row.resultType==='N'" type="number"
+             [ngModel]="row.value" (ngModelChange)="onValueChange(row, $event)">
+
+      <input *ngIf="row.resultType==='T'" type="text"
+             [ngModel]="row.value" (ngModelChange)="onValueChange(row, $event)">
+
+      <select *ngIf="row.resultType==='L'"
+              [ngModel]="row.value" (ngModelChange)="onValueChange(row, $event)">
+        <option value="" disabled>-- Select --</option>
+        <option *ngFor="let o of row.options" [value]="o">{{ o }}</option>
+      </select>
+    </div>
+
+    <div class="c3">{{ row.unit || '—' }}</div>
+    <div class="c4"><textarea [(ngModel)]="row.comment"></textarea></div>
+  </div>
+</div>
+
+
+      <div class="toolbar inner ri-actions">
+        <button class="btn secondary" (click)="saveResults()" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+        <button class="btn success" (click)="markComplete()" [disabled]="completing()" style="background-color: #5c69f8;">
+          {{ completing() ? 'Completing…' : 'Complete' }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+
+  <div *ngIf="isComplete(t)" class="empty">This test is complete.</div>
+</div>
+
+      </div>
+
+      <div class="col-right"></div>
+    </div>
+  </ng-container>
+</div>

@@ -1,4 +1,3 @@
-<!-- Header -->
 <div class="samples-header">
   <div class="left" style="padding: 9px;">
     <img src="assets/Icons/glass.svg" alt="">
@@ -52,11 +51,21 @@
               <div class="v">{{ sample.gradeId?.name || '-' }}</div>
 
               <div class="k">Test List</div>
-              <div class="v">{{ test.name || '-' }}</div>
+              <!-- <div class="v">{{ test.name || '-' }}</div> -->
+               <div class="v">
+  {{ sample.testListId?.name || sample.testListId?.code || sample.testListId || '-' }}
+</div>
+
             </div>
           </div>
+<button
+  class="btn-outline"
+  [disabled]="!canViewResult(test)"
+  (click)="viewResult(test._id)"
+  [title]="!canViewResult(test) ? 'Result not available until test is complete' : 'View Final Report'">
+  View Result
+</button>
 
-          <button class="btn-outline">View Result</button>
         </div>
       </ng-container>
       <ng-template #noTests><div class="empty">No test list.</div></ng-template>

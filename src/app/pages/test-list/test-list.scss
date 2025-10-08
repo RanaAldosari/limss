@@ -1,0 +1,11 @@
+.card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.card-head{font-weight:600;margin-bottom:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv{display:flex;justify-content:space-between;margin:6px 0}
+.btn{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb}
+.btn.block{width:100%}
+.title{margin:0}
+.empty{padding:12px;color:#6b7280}
+.err{color:#ef4444}
+.mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace}
+.badge{background:#eef2ff;border-radius:999px;padding:2px 8px}

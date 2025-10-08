@@ -381,13 +381,13 @@
       <input name="u_cat" [(ngModel)]="formData.category" required />
     </div>
 
-    <div class="field">
-      <label>Group <span class="req" style="color:#ef4444">*</span></label>
-      <select name="u_group" [(ngModel)]="formData.groupId" required>
-        <option [ngValue]="undefined">Choose group…</option>
-        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
-      </select>
-    </div>
+   <div class="field">
+    <label>Group <span class="req" style="color:#ef4444">*</span></label>
+    <select name="tl_group" [(ngModel)]="formData.groupId" required>
+      <option [ngValue]="undefined">Choose group…</option>
+      <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+    </select>
+  </div>
 
     <div class="field full">
       <label>Display String</label>
@@ -407,13 +407,13 @@
       <label>Name <span class="req" style="color:#ef4444">*</span></label>
       <input name="tl_name" [(ngModel)]="formData.name" required />
     </div>
-    <div class="field">
-      <label>Group <span class="req" style="color:#ef4444">*</span></label>
-      <select name="tl_group" [(ngModel)]="formData.groupId" required>
-        <option [ngValue]="undefined">Choose group…</option>
-        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
-      </select>
-    </div>
+   <div class="field">
+    <label>Group <span class="req" style="color:#ef4444">*</span></label>
+    <select name="tl_group" [(ngModel)]="formData.groupId" required>
+      <option [ngValue]="undefined">Choose group…</option>
+      <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+    </select>
+  </div>
 
     <div class="field full">
       <label>Description</label>
@@ -511,13 +511,13 @@
       </select>
     </div>
 
-    <div class="field">
-      <label>Group <span class="req" style="color:#ef4444">*</span></label>
-      <select name="a_group" [(ngModel)]="formData.groupId" required>
-        <option [ngValue]="undefined">Choose group…</option>
-        <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
-      </select>
-    </div>
+  <div class="field">
+    <label>Group <span class="req" style="color:#ef4444">*</span></label>
+    <select name="a_group" [(ngModel)]="formData.groupId" required>
+      <option [ngValue]="undefined">Choose group…</option>
+      <option *ngFor="let g of groups" [ngValue]="g._id">{{ g.name }}</option>
+    </select>
+  </div>
 
     <div class="field">
       <label>Reported Name</label>

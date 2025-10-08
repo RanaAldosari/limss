@@ -1,5 +1,8 @@
 <div class="page">
-  <h2 class="title">My Assigned Tests</h2>
+  <div style="display: flex; align-items: center; background-color: white; padding: 18px 10px; border-radius: 10px; gap: 5px;">
+    <img src="assets/Icons/clipboard-text.svg" alt="" srcset="">
+    <p class="title" style="color: #5C69F8; font-size: 16px;">My Assigned Tests</p>
+  </div>
 
   <div *ngIf="loading" class="empty">Loading…</div>
   <div *ngIf="error" class="empty err">{{ error }}</div>

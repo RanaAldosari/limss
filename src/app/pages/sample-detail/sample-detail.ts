@@ -15,9 +15,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class SampleDetailComponent implements OnInit {
   sample: any;
-  tests: any[] = [];
-
-  // Receive modal
+  tests: any[] = []; 
   showReceiveModal = false;
   receiveComment = '';
   receiving = false;
@@ -42,6 +40,8 @@ export class SampleDetailComponent implements OnInit {
     positions:      'http://localhost:3004/api/v1/positions',
   };
 
+  private readonly TEST_API = 'http://localhost:3007/api/v1/tests';
+
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
@@ -51,15 +51,18 @@ export class SampleDetailComponent implements OnInit {
     });
   }
 
-  // ---------- HTTP helpers ----------
   private getHeaders() {
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        'Content-Type': 'application/json'
-      })
+       'X-Tenant-Key': localStorage.getItem('tenantKey') || 'ibnouf_lab_7_testing',
+       'Content-Type': 'application/json'
+      }),
+        withCredentials: true
     };
   }
+
+
   private pickData = (r: any) => r?.data ?? r ?? null;
 
   private safeGet(url: string | null) {
@@ -125,13 +128,39 @@ export class SampleDetailComponent implements OnInit {
         }
       };
 
-      this.tests = this.sample?.testListId ? [
-        { ...(this.sample.testListId as any), status: (this.sample.status || 'Pending') }
-      ] : [];
+      if (this.sample?._id) this.loadTestsForSample(this.sample._id);
+      else this.tests = [];
     });
   }
 
-  // ---------- Receive ----------
+  private loadTestsForSample(sampleId: string) {
+    const url = `${this.TEST_API}?sampleId=${encodeURIComponent(sampleId)}`;
+    this.http.get<any>(url, this.getHeaders()).pipe(map(this.pickData))
+      .subscribe({
+        next: (arr) => {
+          const list = Array.isArray(arr) ? arr : [];
+          this.tests = list.map((t: any) => ({
+            _id: t._id,
+            name: t.analysis?.name || t.analysisId?.name || t.analysis || t.analysisId || 'Test',
+            status: t.status,                           
+            replicateCount: t.replicateCount ?? null
+          }));
+        },
+        error: () => { this.tests = []; }
+      });
+  }
+
+  canViewResult(test: any): boolean {
+    const s = (test?.status || '').toString().toUpperCase();
+    return ['C', 'COMPLETE', 'A', 'AUTHORIZED', 'R', 'REVIEWED'].includes(s);
+  }
+
+  // ✅ التنقل الصحيح تحت /home
+  viewResult(testId: string) {
+    if (!testId) return;
+    this.router.navigate(['/home/result-details', testId]);
+  }
+
   get isReceived(): boolean {
     const s = (this.sample?.status || '').toString().toUpperCase();
     return !!this.sample?.receivedDate || ['RCV', 'RECEIVED', 'AUTHORIZED'].includes(s);
@@ -153,7 +182,7 @@ export class SampleDetailComponent implements OnInit {
     const newReceivedDate = p?.receivedDate || new Date().toISOString();
 
     this.sample = { ...this.sample, status: newStatus, receivedDate: newReceivedDate };
-    this.tests = (this.tests || []).map(t => ({ ...t, status: newStatus }));
+
   }
 
   confirmReceive() {
@@ -169,15 +198,7 @@ export class SampleDetailComponent implements OnInit {
         this.receiving = false;
         this.showReceiveModal = false;
         this.receiveComment = '';
-
-        this.router.navigate(['/tests'], {
-          queryParams: {
-            sampleId: this.sample?._id,
-            sampleNumber: this.sample?.sampleNumber
-          }
-        });
-
-        alert('Sample received successfully.');
+ alert('Sample received successfully.');
       },
       error: (err) => {
         this.receiving = false;

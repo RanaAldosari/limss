@@ -1,6 +1,6 @@
 .page {
   background: #f6f7fb;
-  padding: 16px;
+  // padding: 16px;
   border-radius: 12px;
 }
 
@@ -49,8 +49,6 @@
 .empty.err {
   color: #e74c3c;
 }
-
-
 
 .page { display:flex; flex-direction:column; gap:12px; }
 .title { margin: 0 0 4px; }

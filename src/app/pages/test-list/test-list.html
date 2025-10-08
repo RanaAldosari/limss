@@ -1,0 +1,79 @@
+<div class="page">
+  <div class="toolbar" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+    <h2 class="title">Sample Details</h2>
+    <div class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn" (click)="back()">Back</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="empty">Loading…</div>
+  <div *ngIf="error" class="empty err">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && !error">
+    <div style="display:grid; grid-template-columns: 1fr 320px; gap:16px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <div class="card">
+          <div class="card-head">Procedure Data</div>
+          <div class="grid-2">
+            <div>
+              <b>Template Name</b>
+              <div>{{ test?.testNumber || optimisticPayload?.name || '-' }}</div>
+            </div>
+            <div>
+              <b>Type</b>
+              <div>-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">Sample Info</div>
+          <div class="grid-2">
+            <div><b>Group Name</b><div>{{ test?.groupId || '-' }}</div></div>
+            <div><b>Sample Plant</b><div>-</div></div>
+            <div><b>Sample Site</b><div>{{ sample?.site || '-' }}</div></div>
+            <div><b>Sampling Point</b><div>{{ sample?.samplingPoint || '-' }}</div></div>
+            <div><b>Sampling Date</b><div>{{ sample?.samplingDate | date:'MMM d, y' }}</div></div>
+            <div><b>Received Date</b><div>{{ sample?.receivedDate | date:'MMM d, y' }}</div></div>
+            <div><b>Priority</b><div>{{ sample?.priority || '-' }}</div></div>
+            <div><b>Process Unit</b><div>{{ sample?.processUnit || '-' }}</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">Storage Info</div>
+          <div class="grid-2">
+            <div><b>Building</b><div>{{ sample?.storage?.building || '-' }}</div></div>
+            <div><b>Room</b><div>{{ sample?.storage?.room || '-' }}</div></div>
+            <div><b>Storage Unit</b><div>{{ sample?.storage?.unit || '-' }}</div></div>
+            <div><b>Shelf</b><div>{{ sample?.storage?.shelf || '-' }}</div></div>
+            <div><b>Box / Drawer</b><div>{{ sample?.storage?.box || '-' }}</div></div>
+            <div><b>Position</b><div>{{ sample?.storage?.position || '-' }}</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">Test Info</div>
+          <div class="grid-2">
+            <div><b>Test #</b><div class="mono">{{ test?.testNumber || optimisticPayload?.code || '-' }}</div></div>
+            <div><b>Status</b><div><span class="badge">{{ mapStatus(test?.status || (isOptimistic ? 'I' : '')) }}</span></div></div>
+            <div><b>Replicates</b><div>{{ test?.replicateCount ?? '—' }}</div></div>
+            <div><b>Operator</b><div>{{ test?.assignedOperator || '—' }}</div></div>
+            <div><b>Sample ID</b><div class="mono">{{ test?.sampleId || optimisticPayload?.sampleId || '—' }}</div></div>
+            <div><b>Created</b><div>{{ test?.createdAt | date:'MMM d, y, HH:mm' }}</div></div>
+            <div><b>Updated</b><div>{{ test?.updatedAt | date:'MMM d, y, HH:mm' }}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">Test List</div>
+        <div class="kv"><b>Product</b><span>{{ sample?.product || '-' }}</span></div>
+        <div class="kv"><b>Product Grade</b><span>{{ sample?.grade || '-' }}</span></div>
+        <div class="kv"><b>Test List</b><span>{{ sample?.testList || optimisticPayload?.name || '-' }}</span></div>
+        <button class="btn block" disabled>View Result</button>
+      </div>
+    </div>
+  </ng-container>
+</div>

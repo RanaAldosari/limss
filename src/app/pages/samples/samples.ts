@@ -67,7 +67,7 @@ export class SamplesComponent implements OnInit {
         s.groupName?.toLowerCase().includes(q) ||
         s.displayStatus?.toLowerCase().includes(q) ||
         (typeof s.createdAt === 'string' && s.createdAt.toLowerCase().includes(q)) ||
-        // بحث داخل أرقام التقدم أيضاً
+     
         `${s.testDone}/${s.testTotal}`.toLowerCase().includes(q)
       );
     });

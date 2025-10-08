@@ -25,6 +25,8 @@ import { Coordinat } from './pages/coordinat/coordinat';
 import { GroupList } from './pages/group-list/group-list';
 import { MyTest } from './pages/my-test/my-test';
 // import { TestDetail } from './pages/test-list/test-list';
+import { MyTestDetailsComponent } from './pages/my-test-details/my-test-details';
+import { ResultDetails } from './pages/result-details/result-details';
 export const routes: Routes = [
   { path: '', component: Login },    
   { path: 'register', component: Register },
@@ -42,17 +44,24 @@ export const routes: Routes = [
   path: 'reports', 
   component: Reports,
 },
+//  { path: 'home/my-test/:id', component: MyTestDetailsComponent },
 {path:'sample-reports',component:SampleReportsComponent},
 {path:'test-reports',component:TestReportsComponent},
 {path:'user-activity',component:UserActivityComponent},
 {path:'roles',component:Role},
 {path:'role-access',component:RoleAccessComponent},
-
-
-  // { path: 'my-test/:id', component: TestDetail },
-
+// { path: 'my-test/:id', component: TestDetail },
+//  { path: 'my-test/optimistic/:id', component: TestDetail }, // ضعها قبل :id
+      // { path: 'my-test/:id', component: TestDetail },
 {path:'test-section',component:TestMain},
 {path:'my-test' ,component:MyTest},
+ // 2. Specific route for optimistic (pending) tests
+      // The router expects a parameter named 'oid' based on how MyTestDetailsComponent is implemented (this.route.snapshot.paramMap.get('oid'))
+      { path: 'my-test/optimistic/:oid', component: MyTestDetailsComponent }, 
+      {path:'result-details/:testId',component:ResultDetails},
+      // 3. General route for API-sourced tests
+      // This MUST come after the 'optimistic' route
+      { path: 'my-test/:id', component: MyTestDetailsComponent },
       { path: 'configurations', component: Configurations },
       { path: 'templates', component: Templates },
       { path: 'tests', component: Tests },

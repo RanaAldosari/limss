@@ -7,7 +7,6 @@
         <p class="crumb">Configurations › List group</p>
       </div>
 
-      <!-- Actions -->
       <div class="header-actions" *ngIf="!showForm(); else formActions">
         <button class="btn primary" (click)="onAdd()" [disabled]="addingDisabled()">+ Add</button>
       </div>
@@ -21,17 +20,15 @@
       </ng-template>
     </div>
 
-    <!-- Tabs (hidden in form mode) -->
     <div class="tabs" *ngIf="!showForm()">
       <button [class.active]="activeTab() === 'lists'" (click)="setTab('lists')">List</button>
       <button [class.active]="activeTab() === 'options'" (click)="setTab('options')">List Options</button>
     </div>
 
-    <!-- Search bar (hidden in form mode) -->
     <div class="search-filter" *ngIf="!showForm()">
       <div class="search-input">
         <img src="assets/Icons/search-normal.svg" alt="Search" />
-        <input type="text" placeholder="Search" [(ngModel)]="searchTerm" />
+        <input type="text" placeholder="Search" [(ngModel)]="searchTerm" name="search" [ngModelOptions]="{standalone:true}" />
         <button class="clear" *ngIf="searchTerm" (click)="searchTerm = ''">×</button>
       </div>
     </div>
@@ -39,8 +36,6 @@
 
   <!-- ===== LISTS TABLE ===== -->
   <div *ngIf="!showForm() && activeTab() === 'lists'" class="card">
-    
-
     <div class="table-wrap table-container">
       <table class="data-table">
         <thead>
@@ -54,9 +49,9 @@
           <tr *ngFor="let l of filteredLists()"
               [class.active]="selectedListId() === l._id"
               (click)="onListRowClick(l._id)">
-            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.code }}</td>
-            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.name }}</td>
-            <td style="font-weight: 300; font-family:Arial, Helvetica, sans-serif; font-size: 14px;">{{ l.description || '-' }}</td>
+            <td style="font-weight:300;font-family:Arial,Helvetica,sans-serif;font-size:14px">{{ l.code }}</td>
+            <td style="font-weight:300;font-family:Arial,Helvetica,sans-serif;font-size:14px">{{ l.name }}</td>
+            <td style="font-weight:300;font-family:Arial,Helvetica,sans-serif;font-size:14px">{{ l.description || '-' }}</td>
           </tr>
           <tr *ngIf="!filteredLists()?.length">
             <td class="empty" colspan="3">No lists</td>
@@ -99,6 +94,7 @@
     </div>
   </div>
 
+  <!-- ===== FORM ===== -->
   <div *ngIf="showForm()" class="form-card">
     <div class="form-head">
       <img src="assets/Icons/warning-2.svg" alt="">
@@ -109,44 +105,95 @@
     <form class="form-grid" *ngIf="mode() === 'list'" (submit)="$event.preventDefault(); onSave()">
       <div class="form-col">
         <label>Group <span class="req">*</span></label>
-        <select class="input" [ngModel]="newListGroupId()" (ngModelChange)="setNewListGroup($event)">
-          <option *ngFor="let g of groupsFromLists()" [ngValue]="g._id">
+        <select
+          class="input"
+          name="list_group"
+          [ngModel]="newListGroupId()"
+          (ngModelChange)="setNewListGroup($event)"
+          [ngModelOptions]="{standalone:true}">
+          <option *ngFor="let g of groups()" [ngValue]="g._id">
             {{ g.name }} <ng-container *ngIf="g.code">({{ g.code }})</ng-container>
           </option>
         </select>
 
         <label>Name <span class="req">*</span></label>
-        <input class="input" type="text" [ngModel]="newList().name" (ngModelChange)="setNewListName($event)" />
+        <input
+          class="input"
+          type="text"
+          name="list_name"
+          [ngModel]="newList().name"
+          (ngModelChange)="setNewListName($event)"
+          [ngModelOptions]="{standalone:true}" />
 
         <label>Code <span class="req">*</span></label>
-        <input class="input" type="text" [ngModel]="newList().code" (ngModelChange)="setNewListCode($event)" />
+        <input
+          class="input"
+          type="text"
+          name="list_code"
+          [ngModel]="newList().code"
+          (ngModelChange)="setNewListCode($event)"
+          [ngModelOptions]="{standalone:true}" />
       </div>
       <div class="form-col">
         <label>Description</label>
-        <textarea class="input" rows="6" [ngModel]="newList().description" (ngModelChange)="setNewListDesc($event)"></textarea>
+        <textarea
+          class="input"
+          rows="6"
+          name="list_desc"
+          [ngModel]="newList().description"
+          (ngModelChange)="setNewListDesc($event)"
+          [ngModelOptions]="{standalone:true}"></textarea>
       </div>
     </form>
 
-    <!-- Add Option -->
     <form class="form-grid" *ngIf="mode() === 'option'" (submit)="$event.preventDefault(); onSave()">
       <div class="form-col">
         <label>List <span class="req">*</span></label>
-        <select class="input" [ngModel]="newOptionListId()" (ngModelChange)="setNewOptionList($event)">
+        <select
+          class="input"
+          name="opt_list"
+          [ngModel]="newOptionListId()"
+          (ngModelChange)="setNewOptionList($event)"
+          [ngModelOptions]="{standalone:true}">
           <option *ngFor="let l of lists()" [ngValue]="l._id">{{ l.name }} ({{ l.code }})</option>
         </select>
 
         <label>Code <span class="req">*</span></label>
-        <input class="input" type="text" [ngModel]="newOption().code" (ngModelChange)="setNewOptCode($event)" />
+        <input
+          class="input"
+          type="text"
+          name="opt_code"
+          [ngModel]="newOption().code"
+          (ngModelChange)="setNewOptCode($event)"
+          [ngModelOptions]="{standalone:true}" />
 
         <label>Value <span class="req">*</span></label>
-        <input class="input" type="text" [ngModel]="newOption().value" (ngModelChange)="setNewOptValue($event)" />
+        <input
+          class="input"
+          type="text"
+          name="opt_value"
+          [ngModel]="newOption().value"
+          (ngModelChange)="setNewOptValue($event)"
+          [ngModelOptions]="{standalone:true}" />
 
         <label>Label <span class="req">*</span></label>
-        <input class="input" type="text" [ngModel]="newOption().label" (ngModelChange)="setNewOptLabel($event)" />
+        <input
+          class="input"
+          type="text"
+          name="opt_label"
+          [ngModel]="newOption().label"
+          (ngModelChange)="setNewOptLabel($event)"
+          [ngModelOptions]="{standalone:true}" />
       </div>
       <div class="form-col">
         <label>Sort Order</label>
-        <input class="input" type="number" [ngModel]="newOption().sortOrder" (ngModelChange)="setNewOptSort($event)" />
+        <input
+          class="input"
+          type="number"
+          name="opt_sort"
+          [ngModel]="newOption().sortOrder"
+          (ngModelChange)="setNewOptSort($event)"
+          [ngModelOptions]="{standalone:true}" />
       </div>
     </form>
   </div>

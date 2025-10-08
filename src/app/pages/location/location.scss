@@ -1,4 +1,3 @@
-/* Header + Breadcrumb (same spirit as Staff) */
 .header-shell { background: transparent; margin-bottom: 10px; }
 
 .header-bar {
@@ -31,7 +30,7 @@
   button.active { color: #5C69F8; border-color: #5C69F8; }
 }
 
-/* Search (copied style from Staff) */
+/* Search */
 .search-filter { margin: 8px 0 6px; display: flex; }
 .search-input {
   position: relative; display: inline-flex; align-items: center; gap: 8px;

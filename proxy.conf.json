@@ -1,0 +1,30 @@
+{
+  "/md": {
+    "target": "http://localhost:3004",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/md": "" }
+  },
+  "/lims": {
+    "target": "http://localhost:3005",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/lims": "" }
+  },
+  "/tests": {
+    "target": "http://localhost:3007",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/tests": "" }
+  },
+  "/id": {
+    "target": "http://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/id": "" }
+  }
+}

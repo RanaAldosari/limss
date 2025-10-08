@@ -1,4 +1,3 @@
-/* Palette */
 $primary: #5C69F8;
 $text: #111827;
 $muted: #6b7280;
@@ -23,7 +22,6 @@ $border: #e5e7eb;
 .btn.primary { background: $primary; color: #fff; }
 .btn.ghost { background: #f3f4f6; color: #333; }
 
-/* Tabs (hidden in form mode from HTML) */
 .tabs { margin-top: 12px; display: flex; justify-content: center; gap: 20px; padding: 8px 0;
   button { background: transparent; border: 0; cursor: pointer; color: #6b7280; font-weight: 600;
     padding: 6px 2px; border-bottom: 2px solid transparent; }
@@ -41,7 +39,6 @@ $border: #e5e7eb;
   .clear { border: 0; background: transparent; font-size: 16px; line-height: 1; cursor: pointer; opacity: .5; }
 }
 
-/* Card & table */
 .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; .spacer{flex:1} .muted{color:$muted} }
 .table-wrap { overflow: auto; }
 .table-container { border-radius: 16px; overflow: hidden; }

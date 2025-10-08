@@ -39,8 +39,7 @@ export class Coordinat {
   editMode = false;
   saving = false;
   formData: any = { active: true, _id: undefined };
-
-  // dropdowns
+  
   sites: any[] = [];
   plants: any[] = [];
   units: any[] = [];
@@ -155,7 +154,6 @@ export class Coordinat {
     });
   }
 
-  // ===== SAVE =====
   onSave() {
     let url = ''; let payload: any = {};
     const method: 'post'|'patch' = this.editMode ? 'patch' : 'post';

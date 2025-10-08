@@ -1,0 +1,142 @@
+<div class="result-page" style="font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji','Segoe UI Emoji'; color:#0f172a;">
+
+  <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; max-width:1120px; margin:0 auto;">
+    <!-- <button (click)="back()" style="border:1px solid #e5e7eb; background:#fff; color:#111827; border-radius:10px; padding:8px 12px; cursor:pointer;">← Back</button> -->
+    <div style="flex:1;"></div>
+    <button (click)="exportPdf()" style="border:none; background:#5c69f8; color:white; font-weight:600; border-radius:10px; padding:10px 14px; cursor:pointer;">Export PDF</button>
+  </div>
+
+  <div *ngIf="loading" style="max-width:1120px; margin:20px auto; text-align:center; color:#6b7280;">Loading…</div>
+  <div *ngIf="!loading && error" style="max-width:1120px; margin:20px auto; text-align:center; color:#dc2626;">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" #pdfArea
+       style="max-width:1120px; margin:0 auto 28px; background:#fff; padding:0 22px 28px; border-radius:14px; box-shadow:0 18px 40px rgba(17,24,39,.08);">
+
+    <div style="height:6px; background:#6C63FF; width:calc(100% + 44px); margin:0 -22px 12px;"></div>
+
+    <header style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; padding:8px 2px 16px; border-bottom:1px solid #f1f5f9;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img src="assets/Icons/glass.svg" alt="LIMS" style="width:54px; height:54px; object-fit:contain;" />
+        <div>
+          <div style="font-size:28px; font-weight:800; letter-spacing:.2px; color:#5c69f8; line-height:1;">LIMS</div>
+          <div style="font-size:12px; color:#6b7280; margin-top:2px;">Lab Information Management System</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 96px 1fr; gap:10px 18px; align-content:start; min-width:420px;">
+        <div style="color:#64748b;">Test</div>
+        <div style="text-align:right; font-weight:500;">{{ safe(testMeta?.testNumber, testId) }}</div>
+
+        <div style="color:#64748b;">Sample</div>
+        <div style="text-align:right; font-weight:500;">{{ sampleMeta?.sampleNumber || sampleMeta?._id || '—' }}</div>
+
+        <div style="color:#64748b;">Analysis</div>
+        <div style="text-align:right; font-weight:500;">{{ analysisName() }}</div>
+
+        <div style="color:#64748b;">Status</div>
+        <div style="text-align:right;">
+          <span [ngStyle]="{
+            display:'inline-block',
+            padding:'4px 10px',
+            borderRadius:'999px',
+            fontSize:'12px',
+            fontWeight:700,
+            background:(statusText()==='Authorized'||statusText()==='Complete')?'#e8fff1':'#eef2ff',
+            color:(statusText()==='Authorized'||statusText()==='Complete')?'#16a34a':'#4f46e5'
+          }">{{ statusText() }}</span>
+        </div>
+
+        <div style="color:#64748b;">Print Date</div>
+        <div style="text-align:right; font-weight:500;">{{ printDate | date:'MMM d, y HH:mm' }}</div>
+      </div>
+    </header>
+
+    <div style="height:16px;"></div>
+
+    <!-- Info cards -->
+    <section style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+      <!-- Sample Details -->
+      <div style="border:1px solid #eef2ff; border-radius:12px; padding:14px 16px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:12px;">
+          <img src="assets/Icons/drop (1).svg" alt="" style="width:18px; height:18px; object-fit:contain;" />
+          <span style="color: #5c69f8; font-weight: 500;">Sample Details</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px;">
+          <div style="color:#64748b;">Product</div>       <div>{{ sampleMeta?.productId?.name || '—' }}</div>
+          <div style="color:#64748b;">Grade</div>         <div>{{ sampleMeta?.gradeId?.name || '—' }}</div>
+          <div style="color:#64748b;">Group</div>         <div>{{ sampleMeta?.groupName || testMeta?.groupId || '—' }}</div>
+          <!-- <div style="color:#64748b;">Sampling Date</div> <div>{{ sampleMeta?.samplingDate | date:'MMM d, y' }}</div> -->
+        </div>
+      </div>
+
+      <!-- Test Details -->
+      <div style=" border:1px solid #eef2ff; border-radius:12px; padding:14px 16px;">
+        <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:12px;">
+          <img src="assets/Icons/glass.svg" alt="" style="width:18px; height:18px; object-fit:contain;" />
+          <span style="color: #5c69f8; font-weight: 500;">Test Details</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px;">
+          <div style="color:#64748b;">Replicates</div> <div>{{ safe(testMeta?.replicateCount) }}</div>
+          <div style="color:#64748b;">Created</div>    <div>{{ testMeta?.createdAt | date:'MMM d, y HH:mm' }}</div>
+          <div style="color:#64748b;">Updated</div>    <div>{{ testMeta?.updatedAt | date:'MMM d, y HH:mm' }}</div>
+          <div style="color:#64748b;">Operator</div>   <div>{{ testMeta?.assignedOperator || '—' }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section style="background:#fff; border:1px solid #eef2ff; border-radius:12px; padding:0; margin-top:18px;">
+      <div style="padding:14px 16px; border-bottom:1px solid #f1f5f9; font-weight:700; display:flex; align-items:center; gap:8px;">
+        <img src="assets/Icons/clipboard-text.svg" alt="" style="width:18px; height:18px; object-fit:contain;" />
+        <span style="color: #5c69f8; font-weight: 500;">Results</span>
+      </div>
+
+      <table style="width:100%; border-collapse:separate; border-spacing:0; font-size:14px;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:12px 16px; color:#64748b; border-bottom:1px solid #f1f5f9; width:45%;">Test</th>
+            <th style="text-align:center; padding:12px 16px; color:#64748b; border-bottom:1px solid #f1f5f9; width:20%;">Result</th>
+            <th style="text-align:center; padding:12px 16px; color:#64748b; border-bottom:1px solid #f1f5f9; width:15%;">Unit</th>
+            <th style="text-align:center; padding:12px 16px; color:#64748b; border-bottom:1px solid #f1f5f9; width:20%;">In Spec</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of entries">
+            <td style="padding:14px 16px; border-bottom:1px solid #f8fafc;">
+              <div style="font-weight:600;">{{ r.name }}</div>
+              <div *ngIf="r.code" style="font-size:12px; color:#9ca3af; margin-top:2px;">{{ r.code }}</div>
+            </td>
+            <td style="padding:14px 16px; border-bottom:1px solid #f8fafc; text-align:center; font-weight:700;">
+              {{ (r.value ?? '') !== '' ? r.value : '—' }}
+            </td>
+            <td style="padding:14px 16px; border-bottom:1px solid #f8fafc; text-align:center;">
+              {{ r.unit || '—' }}
+            </td>
+            <td style="padding:14px 16px; border-bottom:1px solid #f8fafc; text-align:center;">
+              <span [ngStyle]="{
+                display:'inline-block',
+                padding:'4px 10px',
+                borderRadius:'999px',
+                fontSize:'12px',
+                fontWeight:700,
+                background: r.inSpec===true ? '#e8fff1' : (r.inSpec===false ? '#ffecec' : '#f3f4f6'),
+                color: r.inSpec===true ? '#16a34a' : (r.inSpec===false ? '#dc2626' : '#6b7280')
+              }">{{ r.inSpec === true ? 'Yes' : (r.inSpec === false ? 'No' : '—') }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section *ngIf="hasOutOfSpec" style="background:#fff; border:1px solid #fee2e2; border-radius:12px; padding:14px 16px; margin-top:14px;">
+      <div style="font-weight:700; color:#b91c1c; margin-bottom:8px;">Interpretation</div>
+      <ul style="margin:0; padding-left:18px;">
+        <li *ngFor="let r of outOfSpecEntries" style="margin:4px 0;">
+          <b>{{ r.name }}</b> is <span style="font-weight:700; color:#dc2626;">out of spec</span>. Please review.
+        </li>
+      </ul>
+    </section>
+
+    <div style="height:18px;"></div>
+</div>
+</div>

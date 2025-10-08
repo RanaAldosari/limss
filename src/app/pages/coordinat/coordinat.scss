@@ -36,7 +36,6 @@
   button.active{ color:#4f46e5; border-color:#4f46e5; }
 }
 
-/* ===== Search ===== */
 .search-filter { margin: 8px 0 10px; display:flex; }
 .search-input{
   position:relative; display:inline-flex; align-items:center; gap:8px;
@@ -46,7 +45,6 @@
   input{ border:0; outline:none; font-size:13px; width:260px; background:transparent; }
 }
 
-/* ===== Card + Table ===== */
 .card{ background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 0 rgba(0,0,0,.04); }
 .table-card{ padding:0; }
 
@@ -59,7 +57,6 @@ tbody td{
 }
 tbody tr:last-child td{ border-bottom:none; }
 
-/* ===== Active/Inactive text like Tests ===== */
 .state-active{ color:#16a34a; font-weight:700; }
 .state-inactive{ color:#dc2626; font-weight:700; }
 

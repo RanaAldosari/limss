@@ -2,13 +2,13 @@
 <div class="page">
 
   <!-- Header -->
-  <div class="page-head card">
+  <div class="page-head card" style="background-color: white;">
     <div class="left">
       <img src="assets/Icons/glass.svg" alt="">
-      <p class="title">Tests</p>
+      <p class="title" style="color: #5C69F8;">Tests</p>
     </div>
     <div class="right">
-      <button class="assign-btn"
+      <button class="assign-btn" 
               [class.active]="selectedTestsCount > 0"
               [disabled]="selectedTestsCount === 0"
               (click)="openAssignModal()">
@@ -18,13 +18,13 @@
   </div>
 
   <!-- Toolbar -->
-  <div class="toolbar card">
+  <div class="toolbar card" style="background-color: white;">
     <div class="search-wrap">
       <img class="search-ic" src="assets/Icons/search-normal.svg" alt="">
       <input
-        class="search"
+        class="search" style="width: 300px;"
         [(ngModel)]="t_search"
-        placeholder="Search by test #, sample #, analysis, group…"
+        placeholder="Search"
         aria-label="Search"
       />
     </div>
@@ -36,15 +36,13 @@
 
     <div class="count">Total: {{ testsFiltered().length }}</div>
   </div>
-
-  <!-- Hint: came from Sample -->
   <div *ngIf="route.snapshot.queryParamMap.get('sampleNumber') as sNo"
        class="hint">
     From Sample: <b class="mono">{{ sNo }}</b> — tests below were created for this sample.
   </div>
 
   <!-- Table -->
-  <div class="table card">
+  <div class="table card" style="background-color: white;">
     <div class="thead">
       <div class="th chk">
         <input
@@ -77,14 +75,29 @@
       <div class="td mono">{{ r.sampleNumber }}</div>
       <div class="td">{{ r.analysis }}</div>
       <div class="td">{{ r.group }}</div>
-      <div class="td">
+      <!-- <div class="td">
         {{ (r.sampleStatus==='Rcv' || r.sampleStatus==='RCV') ? 'Received' : (r.sampleStatus || '—') }}
-      </div>
+      </div> -->
       <div class="td">
+  <span class="pill"
+        [ngClass]="((r.sampleStatus||'').toString().toUpperCase()==='RCV' || (r.sampleStatus||'').toString().toUpperCase()==='RECEIVED')
+                    ? 'pill-received' : 'pill-none'">
+    {{ ((r.sampleStatus||'').toString().toUpperCase()==='RCV' || (r.sampleStatus||'').toString().toUpperCase()==='RECEIVED')
+        ? 'Received' : '—' }}
+  </span>
+</div>
+
+      <!-- <div class="td">
         <span class="badge" [ngClass]="statusBadgeClass(r.status)" [title]="'Raw: ' + (r.status || '-')">
           <span class="dot"></span>{{ prettyStatus(r.status) }}
         </span>
-      </div>
+      </div> -->
+      <div class="td">
+  <span class="badge status" [ngClass]="statusBadgeClass(r.status)" [title]="'Raw: ' + (r.status || '-')">
+    {{ prettyStatus(r.status) }}
+  </span>
+</div>
+
       <div class="td">{{ r.operator || '—' }}</div>
       <div class="td">{{ r.createdAt | date:'MMM d, y, HH:mm' }}</div>
     </div>
@@ -102,7 +115,6 @@
     <h2>Assign Tests</h2>
 
     <div class="assign-grid">
-      <!-- Selected tests -->
       <div class="sel-col">
         <h4>Selected Tests ({{ selectedTestsCount }})</h4>
         <ul class="sel-list">
@@ -131,7 +143,7 @@
           <input
             class="user-search"
             type="text"
-            placeholder="Search users…"
+            placeholder="Search"
             [(ngModel)]="userSearch"
             (ngModelChange)="onUserSearchChange()"
           />
@@ -156,7 +168,6 @@
               </div>
             </div>
           </label>
-
           <div class="empty" *ngIf="!users.length">No users found.</div>
         </div>
       </div>

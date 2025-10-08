@@ -45,7 +45,6 @@ export class LogSampleComponent implements OnInit {
     position: null as DropItem | null,
   };
 
-  /** جميع المفاتيح الممكنة (للتطبيع) */
   readonly settingKeys = [
     'siteId','plantId','processUnitId','samplingPointId',
     'productId','gradeId','stageId','testListId',
@@ -99,7 +98,6 @@ export class LogSampleComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   private readonly API = {
-    // Master Data (3004)
     sampleTemplates: 'http://localhost:3004/api/v1/sample-templates',
     testLists:       'http://localhost:3004/api/v1/test-lists',
     sites:           'http://localhost:3004/api/v1/sites',
@@ -116,7 +114,6 @@ export class LogSampleComponent implements OnInit {
     shelves:         'http://localhost:3004/api/v1/shelves',
     boxes:           'http://localhost:3004/api/v1/boxes',
     positions:       'http://localhost:3004/api/v1/positions',
-    // LIMS write (3005)
     samples:         'http://localhost:3005/api/v1/samples',
   };
 
@@ -124,6 +121,7 @@ export class LogSampleComponent implements OnInit {
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+        'X-Tenant-Key': localStorage.getItem('tenantKey') || 'default', 
         'Content-Type': 'application/json'
       })
     };
@@ -137,7 +135,6 @@ export class LogSampleComponent implements OnInit {
            Array.isArray(r?.data?.items) ? r.data.items : [];
   }
 
-  // تحميل القوائم من 3004
   loadLookups() {
     this.http.get<any>(this.API.sampleTemplates, this.headers).subscribe(r => this.templates = this.pick(r));
     this.http.get<any>(this.API.testLists, this.headers).subscribe(r => this.testLists = this.pick(r));
@@ -200,7 +197,6 @@ export class LogSampleComponent implements OnInit {
     }
   }
 
-  /** الحقول المعروضة فقط */
   private recomputeFields() {
     const s = (this.formData.template as any)?.settings || {};
 
@@ -215,7 +211,6 @@ export class LogSampleComponent implements OnInit {
     console.log('settings snapshot:', s);
   }
 
-  // helpers للربط
   getSetting(field: string) {
     const t: any = this.formData.template;
     return t?.settings?.[field] || { visible: false, required: false };
@@ -275,7 +270,7 @@ export class LogSampleComponent implements OnInit {
   private valueFor(field: string) {
     const mk = this.getModelFor(field);
     const v = this.formData[mk];
-    if (v && typeof v === 'object') return (v as any)._id || null; // dropdown
+    if (v && typeof v === 'object') return (v as any)._id || null; 
     const s = (v === 0 || v === false) ? v : (v ?? '').toString().trim();
     return s ? s : null;
   }
@@ -289,7 +284,6 @@ export class LogSampleComponent implements OnInit {
   private toId = (x: any) => x && x._id ? x._id : undefined;
   private toISO = (d: string) => d ? new Date(d).toISOString() : undefined;
 
-  // الحفظ
   saveSample() {
     if (this.saving) return;
     if (!this.isValidRequired()) { alert('Please fill all required fields.'); return; }
